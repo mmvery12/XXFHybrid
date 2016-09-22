@@ -18,4 +18,6 @@ static NSString *CommSelNameConfig = @"__CommSelNameConfig";
 static NSString *CommParamsConfig = @"__CommParamsConfig";
 static NSString *CommJsCallBackIdentifyConfig = @"__CommJsCallBackIdentifyConfig";
 
-
+//comm中方法命名规范
+//需有三个参数，第一个js传递进来的参数，第二个，完成后回调js的id，第三个完成后的回调
+//-(void)selName:(id)params identify:(id)identify block:(void(^id cmmdresult)(void))block;

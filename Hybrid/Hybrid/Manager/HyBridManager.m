@@ -152,7 +152,6 @@
         NSError *error;
         NSDictionary *dict = [NSJSONSerialization JSONObjectWithData:[[[params componentsSeparatedByString:urlParamsStr] lastObject] dataUsingEncoding:NSUTF8StringEncoding] options:0 error:&error];
         
-        
         Class cls = dict[commClassName];
         SEL sel = NSSelectorFromString(dict[CommSelNameConfig]);
         id params = dict[CommParamsConfig];
@@ -164,6 +163,7 @@
         [inv setTarget:cls];
         [inv setArgument:&params atIndex:2];
         [inv setArgument:&identify atIndex:3];
+        [inv setArgument:&block atIndex:4];
         [inv invoke];
         return NO;
     }
