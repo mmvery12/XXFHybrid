@@ -1,0 +1,39 @@
+{
+    "modules": [
+                {
+                "identify": "xxxxx",
+                "moduleName": "moduleA",
+                "remoteurl": "https://download.microsoft.com/download/0/A/F/0AFB5316-3062-494A-AB78-7FB0D4461357/7601.17514.101119-1850_Update_Sp_Wave1-GRMSP1.1_DVD.iso",
+                "version": "1.0.0",
+                "depend": [
+                           "moduleC",
+                           "moduleB"
+                           ]
+                },
+                {
+                "identify": " xxxxx",
+                "moduleName": "moduleB",
+                "remoteurl": " http://img30.360buyimg.com/jdwork/jfs/t2998/222/2630497372/71458/58f6effc/57df5af8N7ec007e9.jpg",
+                "version": "1.0.0",
+                "depend": [
+                           "moduleD"
+                           ]
+                },
+                {
+                "identify": "xxxxx",
+                "moduleName": "moduleC",
+                "remoteurl": "http://img30.360buyimg.com/jdwork/jfs/t3214/136/2299661031/96531/df1830e4/57df4683N659a9803.png",
+                "version": "1.0.0",
+                "depend": []
+                },
+                {
+                "identify": "xxxxx",
+                "moduleName": "moduleD",
+                "remoteurl": "http://img30.360buyimg.com/jdwork/jfs/t3295/328/2378959747/209593/a102beca/57e0e8eeN6e03ada9.jpg",
+                "version": "1.0.0",
+                "depend": [
+                           "moduleA"
+                           ]
+                }
+                ]
+}

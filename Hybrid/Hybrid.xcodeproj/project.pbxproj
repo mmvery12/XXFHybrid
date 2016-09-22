@@ -1,0 +1,507 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		699179E11D91106C00DD0A05 /* HyBridManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 699179CF1D91106C00DD0A05 /* HyBridManager.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		699179E21D91106C00DD0A05 /* HyBridManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 699179D01D91106C00DD0A05 /* HyBridManager.m */; };
+		699179E31D91106C00DD0A05 /* NetWorkManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 699179D21D91106C00DD0A05 /* NetWorkManager.h */; };
+		699179E41D91106C00DD0A05 /* NetWorkManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 699179D31D91106C00DD0A05 /* NetWorkManager.m */; };
+		699179E51D91106C00DD0A05 /* Hybrid.h in Headers */ = {isa = PBXBuildFile; fileRef = 699179D51D91106C00DD0A05 /* Hybrid.h */; };
+		699179E61D91106C00DD0A05 /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 699179D61D91106C00DD0A05 /* Info.plist */; };
+		699179E91D91108700DD0A05 /* Com.h in Headers */ = {isa = PBXBuildFile; fileRef = 699179E71D91108700DD0A05 /* Com.h */; };
+		699179EA1D91108700DD0A05 /* Com.m in Sources */ = {isa = PBXBuildFile; fileRef = 699179E81D91108700DD0A05 /* Com.m */; };
+		699179F11D911C4100DD0A05 /* CommFormatConfig.h in Headers */ = {isa = PBXBuildFile; fileRef = 699179F01D911C4100DD0A05 /* CommFormatConfig.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		699179F41D91318E00DD0A05 /* Exchange.h in Headers */ = {isa = PBXBuildFile; fileRef = 699179F21D91318E00DD0A05 /* Exchange.h */; };
+		699179F51D91318E00DD0A05 /* Exchange.m in Sources */ = {isa = PBXBuildFile; fileRef = 699179F31D91318E00DD0A05 /* Exchange.m */; };
+		69917A021D92278D00DD0A05 /* ModuleManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 699179FB1D92278D00DD0A05 /* ModuleManager.h */; };
+		69917A031D92278D00DD0A05 /* ModuleManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 699179FC1D92278D00DD0A05 /* ModuleManager.m */; };
+		69917A041D92278D00DD0A05 /* ModuleSelect.h in Headers */ = {isa = PBXBuildFile; fileRef = 699179FD1D92278D00DD0A05 /* ModuleSelect.h */; };
+		69917A051D92278D00DD0A05 /* Module.h in Headers */ = {isa = PBXBuildFile; fileRef = 699179FE1D92278D00DD0A05 /* Module.h */; };
+		69917A061D92278D00DD0A05 /* Module.m in Sources */ = {isa = PBXBuildFile; fileRef = 699179FF1D92278D00DD0A05 /* Module.m */; };
+		69917A071D92278D00DD0A05 /* Zip.h in Headers */ = {isa = PBXBuildFile; fileRef = 69917A001D92278D00DD0A05 /* Zip.h */; };
+		69917A081D92278D00DD0A05 /* Zip.m in Sources */ = {isa = PBXBuildFile; fileRef = 69917A011D92278D00DD0A05 /* Zip.m */; };
+		69F2E7B21D90EC5D00603610 /* Hybrid.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 69F2E7A71D90EC5D00603610 /* Hybrid.framework */; };
+		69F2E7B71D90EC5D00603610 /* HybridTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 69F2E7B61D90EC5D00603610 /* HybridTests.m */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		69F2E7B31D90EC5D00603610 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 69F2E79E1D90EC5D00603610 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 69F2E7A61D90EC5D00603610;
+			remoteInfo = Hybrid;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		699179CF1D91106C00DD0A05 /* HyBridManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HyBridManager.h; sourceTree = "<group>"; };
+		699179D01D91106C00DD0A05 /* HyBridManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HyBridManager.m; sourceTree = "<group>"; };
+		699179D21D91106C00DD0A05 /* NetWorkManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NetWorkManager.h; sourceTree = "<group>"; };
+		699179D31D91106C00DD0A05 /* NetWorkManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NetWorkManager.m; sourceTree = "<group>"; };
+		699179D51D91106C00DD0A05 /* Hybrid.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Hybrid.h; sourceTree = "<group>"; };
+		699179D61D91106C00DD0A05 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		699179E71D91108700DD0A05 /* Com.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Com.h; sourceTree = "<group>"; };
+		699179E81D91108700DD0A05 /* Com.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Com.m; sourceTree = "<group>"; };
+		699179F01D911C4100DD0A05 /* CommFormatConfig.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CommFormatConfig.h; sourceTree = "<group>"; };
+		699179F21D91318E00DD0A05 /* Exchange.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Exchange.h; sourceTree = "<group>"; };
+		699179F31D91318E00DD0A05 /* Exchange.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Exchange.m; sourceTree = "<group>"; };
+		699179FB1D92278D00DD0A05 /* ModuleManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ModuleManager.h; sourceTree = "<group>"; };
+		699179FC1D92278D00DD0A05 /* ModuleManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ModuleManager.m; sourceTree = "<group>"; };
+		699179FD1D92278D00DD0A05 /* ModuleSelect.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ModuleSelect.h; sourceTree = "<group>"; };
+		699179FE1D92278D00DD0A05 /* Module.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Module.h; sourceTree = "<group>"; };
+		699179FF1D92278D00DD0A05 /* Module.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Module.m; sourceTree = "<group>"; };
+		69917A001D92278D00DD0A05 /* Zip.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Zip.h; sourceTree = "<group>"; };
+		69917A011D92278D00DD0A05 /* Zip.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Zip.m; sourceTree = "<group>"; };
+		69F2E7A71D90EC5D00603610 /* Hybrid.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Hybrid.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		69F2E7B11D90EC5D00603610 /* HybridTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = HybridTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		69F2E7B61D90EC5D00603610 /* HybridTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = HybridTests.m; sourceTree = "<group>"; };
+		69F2E7B81D90EC5D00603610 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		69F2E7A31D90EC5D00603610 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		69F2E7AE1D90EC5D00603610 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				69F2E7B21D90EC5D00603610 /* Hybrid.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		699179C21D91106C00DD0A05 /* Com */ = {
+			isa = PBXGroup;
+			children = (
+				699179E71D91108700DD0A05 /* Com.h */,
+				699179E81D91108700DD0A05 /* Com.m */,
+			);
+			path = Com;
+			sourceTree = "<group>";
+		};
+		699179CE1D91106C00DD0A05 /* Manager */ = {
+			isa = PBXGroup;
+			children = (
+				699179CF1D91106C00DD0A05 /* HyBridManager.h */,
+				699179D01D91106C00DD0A05 /* HyBridManager.m */,
+				699179F21D91318E00DD0A05 /* Exchange.h */,
+				699179F31D91318E00DD0A05 /* Exchange.m */,
+			);
+			path = Manager;
+			sourceTree = "<group>";
+		};
+		699179D11D91106C00DD0A05 /* Net */ = {
+			isa = PBXGroup;
+			children = (
+				699179D21D91106C00DD0A05 /* NetWorkManager.h */,
+				699179D31D91106C00DD0A05 /* NetWorkManager.m */,
+			);
+			path = Net;
+			sourceTree = "<group>";
+		};
+		699179D41D91106C00DD0A05 /* Source */ = {
+			isa = PBXGroup;
+			children = (
+				699179D51D91106C00DD0A05 /* Hybrid.h */,
+				699179D61D91106C00DD0A05 /* Info.plist */,
+			);
+			path = Source;
+			sourceTree = "<group>";
+		};
+		699179EB1D9115D100DD0A05 /* Conf */ = {
+			isa = PBXGroup;
+			children = (
+				699179F01D911C4100DD0A05 /* CommFormatConfig.h */,
+			);
+			path = Conf;
+			sourceTree = "<group>";
+		};
+		699179FA1D92278D00DD0A05 /* Module */ = {
+			isa = PBXGroup;
+			children = (
+				699179FB1D92278D00DD0A05 /* ModuleManager.h */,
+				699179FC1D92278D00DD0A05 /* ModuleManager.m */,
+				699179FD1D92278D00DD0A05 /* ModuleSelect.h */,
+				699179FE1D92278D00DD0A05 /* Module.h */,
+				699179FF1D92278D00DD0A05 /* Module.m */,
+				69917A001D92278D00DD0A05 /* Zip.h */,
+				69917A011D92278D00DD0A05 /* Zip.m */,
+			);
+			path = Module;
+			sourceTree = "<group>";
+		};
+		69F2E79D1D90EC5D00603610 = {
+			isa = PBXGroup;
+			children = (
+				69F2E7A91D90EC5D00603610 /* Hybrid */,
+				69F2E7B51D90EC5D00603610 /* HybridTests */,
+				69F2E7A81D90EC5D00603610 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		69F2E7A81D90EC5D00603610 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				69F2E7A71D90EC5D00603610 /* Hybrid.framework */,
+				69F2E7B11D90EC5D00603610 /* HybridTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		69F2E7A91D90EC5D00603610 /* Hybrid */ = {
+			isa = PBXGroup;
+			children = (
+				699179FA1D92278D00DD0A05 /* Module */,
+				699179EB1D9115D100DD0A05 /* Conf */,
+				699179C21D91106C00DD0A05 /* Com */,
+				699179CE1D91106C00DD0A05 /* Manager */,
+				699179D11D91106C00DD0A05 /* Net */,
+				699179D41D91106C00DD0A05 /* Source */,
+			);
+			path = Hybrid;
+			sourceTree = "<group>";
+		};
+		69F2E7B51D90EC5D00603610 /* HybridTests */ = {
+			isa = PBXGroup;
+			children = (
+				69F2E7B61D90EC5D00603610 /* HybridTests.m */,
+				69F2E7B81D90EC5D00603610 /* Info.plist */,
+			);
+			path = HybridTests;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		69F2E7A41D90EC5D00603610 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				699179E11D91106C00DD0A05 /* HyBridManager.h in Headers */,
+				699179F11D911C4100DD0A05 /* CommFormatConfig.h in Headers */,
+				699179E51D91106C00DD0A05 /* Hybrid.h in Headers */,
+				69917A021D92278D00DD0A05 /* ModuleManager.h in Headers */,
+				699179E31D91106C00DD0A05 /* NetWorkManager.h in Headers */,
+				69917A051D92278D00DD0A05 /* Module.h in Headers */,
+				69917A071D92278D00DD0A05 /* Zip.h in Headers */,
+				699179E91D91108700DD0A05 /* Com.h in Headers */,
+				69917A041D92278D00DD0A05 /* ModuleSelect.h in Headers */,
+				699179F41D91318E00DD0A05 /* Exchange.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		69F2E7A61D90EC5D00603610 /* Hybrid */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 69F2E7BB1D90EC5D00603610 /* Build configuration list for PBXNativeTarget "Hybrid" */;
+			buildPhases = (
+				69F2E7A21D90EC5D00603610 /* Sources */,
+				69F2E7A31D90EC5D00603610 /* Frameworks */,
+				69F2E7A41D90EC5D00603610 /* Headers */,
+				69F2E7A51D90EC5D00603610 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = Hybrid;
+			productName = Hybrid;
+			productReference = 69F2E7A71D90EC5D00603610 /* Hybrid.framework */;
+			productType = "com.apple.product-type.framework";
+		};
+		69F2E7B01D90EC5D00603610 /* HybridTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 69F2E7BE1D90EC5D00603610 /* Build configuration list for PBXNativeTarget "HybridTests" */;
+			buildPhases = (
+				69F2E7AD1D90EC5D00603610 /* Sources */,
+				69F2E7AE1D90EC5D00603610 /* Frameworks */,
+				69F2E7AF1D90EC5D00603610 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				69F2E7B41D90EC5D00603610 /* PBXTargetDependency */,
+			);
+			name = HybridTests;
+			productName = HybridTests;
+			productReference = 69F2E7B11D90EC5D00603610 /* HybridTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		69F2E79E1D90EC5D00603610 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0730;
+				ORGANIZATIONNAME = YC.L;
+				TargetAttributes = {
+					69F2E7A61D90EC5D00603610 = {
+						CreatedOnToolsVersion = 7.3.1;
+					};
+					69F2E7B01D90EC5D00603610 = {
+						CreatedOnToolsVersion = 7.3.1;
+					};
+				};
+			};
+			buildConfigurationList = 69F2E7A11D90EC5D00603610 /* Build configuration list for PBXProject "Hybrid" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = 69F2E79D1D90EC5D00603610;
+			productRefGroup = 69F2E7A81D90EC5D00603610 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				69F2E7A61D90EC5D00603610 /* Hybrid */,
+				69F2E7B01D90EC5D00603610 /* HybridTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		69F2E7A51D90EC5D00603610 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				699179E61D91106C00DD0A05 /* Info.plist in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		69F2E7AF1D90EC5D00603610 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		69F2E7A21D90EC5D00603610 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				69917A081D92278D00DD0A05 /* Zip.m in Sources */,
+				699179F51D91318E00DD0A05 /* Exchange.m in Sources */,
+				699179E41D91106C00DD0A05 /* NetWorkManager.m in Sources */,
+				699179EA1D91108700DD0A05 /* Com.m in Sources */,
+				69917A061D92278D00DD0A05 /* Module.m in Sources */,
+				69917A031D92278D00DD0A05 /* ModuleManager.m in Sources */,
+				699179E21D91106C00DD0A05 /* HyBridManager.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		69F2E7AD1D90EC5D00603610 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				69F2E7B71D90EC5D00603610 /* HybridTests.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		69F2E7B41D90EC5D00603610 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 69F2E7A61D90EC5D00603610 /* Hybrid */;
+			targetProxy = 69F2E7B31D90EC5D00603610 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		69F2E7B91D90EC5D00603610 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Debug;
+		};
+		69F2E7BA1D90EC5D00603610 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Release;
+		};
+		69F2E7BC1D90EC5D00603610 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				INFOPLIST_FILE = "$(SRCROOT)/Hybrid/Source/Info.plist";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = YC.L.Hybrid;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+			};
+			name = Debug;
+		};
+		69F2E7BD1D90EC5D00603610 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				INFOPLIST_FILE = "$(SRCROOT)/Hybrid/Source/Info.plist";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = YC.L.Hybrid;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+			};
+			name = Release;
+		};
+		69F2E7BF1D90EC5D00603610 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				INFOPLIST_FILE = HybridTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = YC.L.HybridTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		69F2E7C01D90EC5D00603610 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				INFOPLIST_FILE = HybridTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = YC.L.HybridTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		69F2E7A11D90EC5D00603610 /* Build configuration list for PBXProject "Hybrid" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				69F2E7B91D90EC5D00603610 /* Debug */,
+				69F2E7BA1D90EC5D00603610 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		69F2E7BB1D90EC5D00603610 /* Build configuration list for PBXNativeTarget "Hybrid" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				69F2E7BC1D90EC5D00603610 /* Debug */,
+				69F2E7BD1D90EC5D00603610 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		69F2E7BE1D90EC5D00603610 /* Build configuration list for PBXNativeTarget "HybridTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				69F2E7BF1D90EC5D00603610 /* Debug */,
+				69F2E7C01D90EC5D00603610 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 69F2E79E1D90EC5D00603610 /* Project object */;
+}
