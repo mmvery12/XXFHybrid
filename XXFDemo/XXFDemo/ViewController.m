@@ -32,7 +32,13 @@
 -(void)xxxx
 {
     [HyBridManager UseResourceWithModuleName:@"moduleA" fileName:@"xxxxx.a" complete:^(NSData *source, NSError *error) {
-        
+        NSString *string = @"";
+        if (source) {
+            string = @"下载完成";
+        }else
+            string = @"下载未完成";
+        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"" message:string delegate:nil cancelButtonTitle:@"" otherButtonTitles: nil];
+        [alert show];
     }];
 }
 
