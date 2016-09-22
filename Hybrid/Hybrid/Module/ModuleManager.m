@@ -93,18 +93,14 @@
     return nil;
 }
 
--(NSData *)findDataWithModuleName:(NSString *)moduleName fileName:(NSString *)fileName inDirectory:(NSString *)directoryName;
+-(NSData *)findDataWithModuleName:(NSString *)moduleName fileName:(NSString *)fileName;
 {
     if (![fileName isKindOfClass:[NSString class]]) {
         return nil;
     }
     NSString *cachePath = [self cachePath];
     NSString *path = nil;
-    if (directoryName==nil || [directoryName isKindOfClass:[NSString class]]) {
-        path = [NSString stringWithFormat:@"%@/%@/%@",cachePath,moduleName,fileName];
-    }else
-        path = [NSString stringWithFormat:@"%@/%@/%@/%@",cachePath,moduleName,directoryName,fileName];
-    
+    path = [NSString stringWithFormat:@"%@/%@/%@",cachePath,moduleName,fileName];
     return [self findSourceAtRelativePath:path];
 }
 

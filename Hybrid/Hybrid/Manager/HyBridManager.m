@@ -153,6 +153,18 @@
         NSDictionary *dict = [NSJSONSerialization JSONObjectWithData:[[[params componentsSeparatedByString:urlParamsStr] lastObject] dataUsingEncoding:NSUTF8StringEncoding] options:0 error:&error];
         
         
+        Class cls = dict[commClassName];
+        SEL sel = NSSelectorFromString(dict[CommSelNameConfig]);
+        id params = dict[CommParamsConfig];
+        id identify = dict[CommJsCallBackIdentifyConfig];
+        
+        NSMethodSignature  *signature = [cls instanceMethodSignatureForSelector:sel];
+        NSInvocation *inv = [NSInvocation invocationWithMethodSignature:signature];
+        [inv setSelector:sel];
+        [inv setTarget:cls];
+        [inv setArgument:&params atIndex:2];
+        [inv setArgument:&identify atIndex:3];
+        [inv invoke];
         return NO;
     }
     return YES;
@@ -200,7 +212,7 @@
         }
     }
     if (ready) {
-        block([moduleManager findDataWithModuleName:md.moduleName fileName:fileName inDirectory:nil],nil);
+        block([moduleManager findDataWithModuleName:md.moduleName fileName:fileName],nil);
     }else
     {
         [netWorkManager addTasks:urls tag:@"max" moduleComplete:^(NSString *url, NSData *data, NSError *error) {
@@ -214,7 +226,7 @@
                 }
             }
             if (ready) {
-                NSData *tdata = [weakModuleManager findDataWithModuleName:md.moduleName fileName:fileName inDirectory:nil];
+                NSData *tdata = [weakModuleManager findDataWithModuleName:md.moduleName fileName:fileName];
                 if (tdata) {
                     block(tdata,nil);
                 }else
