@@ -21,20 +21,29 @@
 @end
 
 @implementation HyBridManager
-
+-(void)UIApplicationDidEnterBackgroundNotification
+{
+    [self timerEnd];
+}
 -(void)UIApplicationWillEnterForegroundNotification
 {
+    [self timerBegin];
     [self start];
 }
 
 -(void)timerBegin
 {
+    [self timerEnd];
+    timer = [NSTimer timerWithTimeInterval:60*60 target:self selector:@selector(start) userInfo:nil repeats:YES];
+    [[NSRunLoop currentRunLoop] addTimer:timer forMode:NSRunLoopCommonModes];
+}
+
+-(void)timerEnd
+{
     if (timer) {
         [timer invalidate];
         timer = nil;
     }
-    timer = [NSTimer timerWithTimeInterval:60*60 target:self selector:@selector(remoteChecking) userInfo:nil repeats:YES];
-    [[NSRunLoop currentRunLoop] addTimer:timer forMode:NSRunLoopCommonModes];
 }
 
 +(void)load
@@ -58,7 +67,8 @@
     if (self) {
         moduleManager = [ModuleManager new];
         netWorkManager = [NetWorkManager new];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(UIApplicationDidEnterBackgroundNotification) name:UIApplicationWillEnterForegroundNotification object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(UIApplicationWillEnterForegroundNotification) name:UIApplicationWillEnterForegroundNotification object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(UIApplicationDidEnterBackgroundNotification) name:UIApplicationDidEnterBackgroundNotification object:nil];
     }
     return self;
 }
@@ -95,9 +105,14 @@
 {
     __weak typeof(self) weakSelf = self;
     [netWorkManager addTask:@"http://www.baidu.com" params:nil complete:^(NSData *data, NSError *error) {
-        if (data) {
+        if (!error) {
+            data = [NSData dataWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"Config" ofType:@"json"]];
             [weakSelf analyzeRemoteConfig:[NSJSONSerialization JSONObjectWithData:data options:0 error:nil]];
+        }else
+        {//-(NSArray <Module *> *)analyzeModules:(NSArray <Module *> *)modules_;这个方法中添加的runloop的source监听，需要在网络请求后响应监听的回调，所以
+            [weakSelf analyzeRemoteConfig:nil];
         }
+        
     }];
 }
 
@@ -107,46 +122,8 @@
     __weak typeof(moduleManager) weakModuleManager = moduleManager;
     //不上传本地资源由native自行判断,服务器下发统一的最新资源配置
     NSArray <Module *>*modules = [moduleManager analyzeModules:[self modulesFromeDictionary:remoteConfigDict]];
-    //计算各个模块权重
-//    NSMutableArray *tempArr = [NSMutableArray new];
-//    for (Module *module in modules) {
-//        [tempArr addObject:@{module.remoteurl:@1}];
-//    }
-//    
-//    for (Module *module in modules) {
-//        for (Module *dep in module.depend) {
-//            if ([dep.moduleName isEqualToString:module.moduleName]) {
-//                int i=0;
-//                for (NSDictionary *dict in tempArr) {
-//                    if ([[dict allKeys][0] isEqualToString:dep.remoteurl]) {
-//                        int num = [dict[[dict allKeys][0]] integerValue];
-//                        num++;
-//                        [tempArr replaceObjectAtIndex:i withObject:@{dep.remoteurl:@(num)}];
-//                    }
-//                    i++;
-//                }
-//            }
-//        }
-//    }
-//    
-//    tempArr = [NSMutableArray arrayWithArray:[tempArr sortedArrayUsingComparator:^NSComparisonResult(id  _Nonnull obj1, id  _Nonnull obj2) {
-//        NSDictionary *dict1 = obj1;
-//        NSDictionary *dict2 = obj2;
-//        NSNumber *key1 = [dict1 allKeys][0];
-//        NSNumber *key2 = [dict2 allKeys][0];
-//        if ([key1 integerValue]>[key2 integerValue]) {
-//            return NSOrderedAscending;
-//        }
-//        if ([key1 integerValue]==[key2 integerValue]) {
-//            return NSOrderedSame;
-//        }
-//        return NSOrderedDescending;
-//    }]];
-//    
-//    for (int i = 0; i<tempArr.count; i++) {
-//        NSDictionary *temp = tempArr[i];
-//        [tempArr replaceObjectAtIndex:i withObject:[temp objectForKey:[temp allKeys][0]]];
-//    }
+//    计算各个模块权重
+//    modules =  [self sotrDownSequence:modules];
     NSMutableArray *temp = [NSMutableArray array];
     for (Module *module in modules) {
         [temp addObject:module.remoteurl];
@@ -160,7 +137,7 @@
             }
         }
     } allcomplete:^{
-        //开启下一次轮训
+        NSLog(@"all allcomplete %@",[NSDate date]);
     }];
 }
 
@@ -183,22 +160,29 @@
 
 -(void)useResourceWithURI:(NSString *)uri complete:(void (^)(NSData *source, NSError *error))block;
 {
-    NSData *data = [moduleManager findSourceAtRelativePath:uri];
-    if (data) {
-        block(data,nil);
-    }else
-    {
-        block(nil,[NSError errorWithDomain:@"NSERROR_SOURCENOTFOUND_DOMAIN" code:-100 userInfo:@{NSLocalizedDescriptionKey:[NSString stringWithFormat:@"URI:%@ ; not found",uri]}]);
-    }
+    __weak typeof(moduleManager) weakmoduleManager = moduleManager;
+    [moduleManager afterModuleInit:^{
+        NSData *data = [weakmoduleManager findSourceAtRelativePath:uri];
+        if (data) {
+            block(data,nil);
+        }else
+        {
+            block(nil,[NSError errorWithDomain:@"NSERROR_SOURCENOTFOUND_DOMAIN" code:-100 userInfo:@{NSLocalizedDescriptionKey:[NSString stringWithFormat:@"URI:%@ ; not found",uri]}]);
+        }
+    }];
 }
 
 -(void)useResourceWithModuleName:(NSString *)name fileName:(NSString *)fileName complete:(void (^)(NSData *source, NSError *error))block;
 {
-    Module *md = [moduleManager findModuleWithModuleName:name];
-    if (!md) {
-        block(nil,[NSError errorWithDomain:@"NSERROR_MODULENOTFOUND_DOMAIN" code:-100 userInfo:@{NSLocalizedDescriptionKey:[NSString stringWithFormat:@"MODULE:%@ ; not found",name]}]);
-    }
-    [self rescurseDepend:md fileName:fileName complete:block];
+    __weak typeof(moduleManager) weakmoduleManager = moduleManager;
+    __weak typeof(self) weakSelf = self;
+    [moduleManager afterModuleInit:^{
+        Module *md = [weakmoduleManager findModuleWithModuleName:name];
+        if (!md) {
+            block(nil,[NSError errorWithDomain:@"NSERROR_MODULENOTFOUND_DOMAIN" code:-100 userInfo:@{NSLocalizedDescriptionKey:[NSString stringWithFormat:@"MODULE:%@ ; not found",name]}]);
+        }
+        [weakSelf rescurseDepend:md fileName:fileName complete:block];
+    }];
 }
 
 -(void)rescurseDepend:(Module *)md fileName:(NSString *)fileName complete:(void (^)(NSData *source, NSError *error))block;
@@ -220,14 +204,13 @@
     }else
     {
         [netWorkManager addTasks:urls tag:@"max" moduleComplete:^(NSString *url, NSData *data, NSError *error) {
-            
-            NSLog(@"123");
-            NSLog(@"123");
+            NSLog(@"%@",url);
         } allcomplete:^{
             ready = YES;
             for (Module *module in arrary) {
                 if (![weakModuleManager isModuleReady:module]) {
                     ready = NO;
+                    break;
                 }
             }
             if (ready) {
@@ -259,6 +242,9 @@
 
 -(NSArray <Module *>*)modulesFromeDictionary:(NSDictionary *)dict
 {
+    if (!dict) {
+        return nil;
+    }
     NSMutableArray *arr = [NSMutableArray new];
     for (NSDictionary *tdict in dict[@"modules"]) {
         Module *module = [Module new];
@@ -272,8 +258,48 @@
     return arr;
 }
 
--(NSArray *)JsCssNeedUpdate:(NSString *)html
-{
-    return nil;
+-(NSArray *)sotrDownSequence:(NSArray *)modules
+{//计算各个模块权重
+    
+    NSMutableArray *tempArr = [NSMutableArray new];
+    for (Module *module in modules) {
+        [tempArr addObject:@{module.remoteurl:@1}];
+    }
+    
+    for (Module *module in modules) {
+        for (Module *dep in module.depend) {
+            if ([dep.moduleName isEqualToString:module.moduleName]) {
+                int i=0;
+                for (NSDictionary *dict in tempArr) {
+                    if ([[dict allKeys][0] isEqualToString:dep.remoteurl]) {
+                        int num = [dict[[dict allKeys][0]] integerValue];
+                        num++;
+                        [tempArr replaceObjectAtIndex:i withObject:@{dep.remoteurl:@(num)}];
+                    }
+                    i++;
+                }
+            }
+        }
+    }
+    
+    tempArr = [NSMutableArray arrayWithArray:[tempArr sortedArrayUsingComparator:^NSComparisonResult(id  _Nonnull obj1, id  _Nonnull obj2) {
+        NSDictionary *dict1 = obj1;
+        NSDictionary *dict2 = obj2;
+        NSNumber *key1 = [dict1 allKeys][0];
+        NSNumber *key2 = [dict2 allKeys][0];
+        if ([key1 integerValue]>[key2 integerValue]) {
+            return NSOrderedAscending;
+        }
+        if ([key1 integerValue]==[key2 integerValue]) {
+            return NSOrderedSame;
+        }
+        return NSOrderedDescending;
+    }]];
+    
+    for (int i = 0; i<tempArr.count; i++) {
+        NSDictionary *temp = tempArr[i];
+        [tempArr replaceObjectAtIndex:i withObject:[temp objectForKey:[temp allKeys][0]]];
+    }
+    return tempArr;
 }
 @end

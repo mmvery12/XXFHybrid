@@ -31,7 +31,7 @@
 
 -(void)xxxx
 {
-    [HyBridManager UseResourceWithModuleName:@"moduleA" fileName:@"" complete:^(NSData *source, NSError *error) {
+    [HyBridManager UseResourceWithModuleName:@"moduleA" fileName:@"xxxxx.a" complete:^(NSData *source, NSError *error) {
         
     }];
 }

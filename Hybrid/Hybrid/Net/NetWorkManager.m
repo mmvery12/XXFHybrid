@@ -91,8 +91,7 @@
     if (receivedata && !error) {
         @synchronized (operDict) {
             for (void (^block)(NSData *data,NSError *error) in [operDict objectForKey:url][@"blocks"]) {
-                NSData *data = [NSData dataWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"Config" ofType:@"json"]];
-                block(data,nil);
+                block(receivedata,nil);
             }
             [operDict removeObjectForKey:url];
         }

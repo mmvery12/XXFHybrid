@@ -12,7 +12,9 @@
 {
     NSMutableArray *modules;
     NSFileManager *fileManager;
+    CFRunLoopRef cfRunloop;
 }
+@property (atomic,assign)BOOL refreshFlag;
 @end
 
 @implementation ModuleManager
@@ -29,41 +31,56 @@
 
 -(void)selfAnalyze;
 {
-    NSData *myEncodedObject = [[NSUserDefaults standardUserDefaults] objectForKey:@"modules"];
-    modules = [NSKeyedUnarchiver unarchiveObjectWithData: myEncodedObject];
-    if (!modules) {
-        modules = [NSMutableArray new];
+    @synchronized (modules) {
+        NSData *myEncodedObject = [[NSUserDefaults standardUserDefaults] objectForKey:@"modules"];
+        modules = [NSKeyedUnarchiver unarchiveObjectWithData: myEncodedObject];
+        if (!modules) {
+            modules = [NSMutableArray new];
+        }
+        [self deleteContentsWithOutModules:modules];//配置文件中没有的统统删掉
     }
-    [self deleteContentsWithOutModules:modules];//配置文件中没有的统统删掉
 }
 
 -(NSArray <Module *> *)analyzeModules:(NSArray <Module *> *)modules_;
 {
     NSMutableArray *needUpdate = [NSMutableArray new];
-    NSMutableArray *normal = [NSMutableArray new];
+    if (modules_.count==0 && modules.count==0) {
+        _refreshFlag = YES;
+        if (cfRunloop){
+            CFRunLoopStop(cfRunloop);
+        }
+    }else
     {
-        for (Module *md in modules_) {
-            Module *mmd = [self findModuleWithModuleName:md.moduleName];
-            if (mmd && [md.version isEqualToString:mmd.version] && [self isModuleReady:mmd]) {
-                [normal addObject:mmd];
-            }else
-                [needUpdate addObject:md];
+        NSMutableArray *normal = [NSMutableArray new];
+        {
+            for (Module *md in modules_) {
+                Module *mmd = [self findModuleWithModuleName:md.moduleName];
+                if (mmd && [md.version isEqualToString:mmd.version] && [self isModuleReady:mmd]) {
+                    [normal addObject:mmd];
+                }else
+                    [needUpdate addObject:md];
+            }
+        }
+        [modules removeObjectsInArray:normal];
+        [modules removeObjectsInArray:needUpdate];
+        for (Module *md in modules) {
+            [self deleteModule:md];
+        }
+        [modules removeAllObjects];
+        [modules addObjectsFromArray:normal];
+        [modules addObjectsFromArray:needUpdate];
+        {
+            NSData *archiveCarPriceData = [NSKeyedArchiver archivedDataWithRootObject:modules];
+            [[NSUserDefaults standardUserDefaults] setObject:archiveCarPriceData forKey:@"modules"];
+            [[NSUserDefaults standardUserDefaults] synchronize];
+        }
+        _refreshFlag = YES;
+        if (cfRunloop){
+            CFRunLoopStop(cfRunloop);
         }
     }
-    [modules removeObjectsInArray:normal];
-    [modules removeObjectsInArray:needUpdate];
-    for (Module *md in modules) {
-        [self deleteModule:md];
-    }
-    [modules removeAllObjects];
-    [modules addObjectsFromArray:normal];
-    [modules addObjectsFromArray:needUpdate];
-    {
-        NSData *archiveCarPriceData = [NSKeyedArchiver archivedDataWithRootObject:modules];
-        [[NSUserDefaults standardUserDefaults] setObject:archiveCarPriceData forKey:@"modules"];
-        [[NSUserDefaults standardUserDefaults] synchronize];
-    }
     return needUpdate;
+    
 }
 
 -(Module *)findModuleWithModuleName:(NSString *)moduleName
@@ -78,12 +95,15 @@
 
 -(NSData *)findDataWithModuleName:(NSString *)moduleName fileName:(NSString *)fileName inDirectory:(NSString *)directoryName;
 {
+    if (![fileName isKindOfClass:[NSString class]]) {
+        return nil;
+    }
     NSString *cachePath = [self cachePath];
     NSString *path = nil;
     if (directoryName==nil || [directoryName isKindOfClass:[NSString class]]) {
-        path = [NSString stringWithFormat:@"%@/%@",cachePath,fileName];
+        path = [NSString stringWithFormat:@"%@/%@/%@",cachePath,moduleName,fileName];
     }else
-        path = [NSString stringWithFormat:@"%@/%@/%@",cachePath,directoryName,fileName];
+        path = [NSString stringWithFormat:@"%@/%@/%@/%@",cachePath,moduleName,directoryName,fileName];
     
     return [self findSourceAtRelativePath:path];
 }
@@ -137,5 +157,19 @@
 {
     NSString *path = [NSString stringWithFormat:@"%@/%@",[self cachePath],module.moduleName];
     return [fileManager fileExistsAtPath:path];
+}
+
+-(void)afterModuleInit:(dispatch_block_t)block;
+{
+    cfRunloop = CFRunLoopGetCurrent();
+    CFRunLoopSourceContext context = {0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL};
+    CFRunLoopSourceRef source = CFRunLoopSourceCreate(kCFAllocatorDefault, 0, &context);
+    CFRunLoopAddSource(cfRunloop, source, kCFRunLoopDefaultMode);
+    while (!_refreshFlag) {
+        CFRunLoopRun();
+    }
+    CFRunLoopRemoveSource(CFRunLoopGetCurrent(), source, kCFRunLoopDefaultMode);
+    CFRelease(source);
+    block();
 }
 @end
