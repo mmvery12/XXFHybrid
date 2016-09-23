@@ -39,15 +39,10 @@
         NSMutableDictionary *tempdict = [operDict objectForKey:urlStr];
         NSMutableArray *temparr = nil;
         if (tempdict) {
-            [queue setSuspended:YES];
             temparr = [tempdict objectForKey:@"blocks"];
             [temparr addObject:block];
-            [queue setSuspended:NO];
             return;
         }
-        
-        
-        
         NSMethodSignature  *signature = [self.class instanceMethodSignatureForSelector:@selector(download:params:count:)];
         NSInvocation *inv = [NSInvocation invocationWithMethodSignature:signature];
         [inv setSelector:@selector(download:params:count:)];
