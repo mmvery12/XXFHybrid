@@ -176,10 +176,15 @@
     [moduleManager afterModuleInit:^{
         NSData *data = [weakmoduleManager findSourceAtRelativePath:uri];
         if (data) {
-            block(data,nil);
+            dispatch_async(dispatch_get_main_queue(), ^{
+                block(data,nil);
+            });
+            
         }else
         {
-            block(nil,[NSError errorWithDomain:@"NSERROR_SOURCENOTFOUND_DOMAIN" code:-100 userInfo:@{NSLocalizedDescriptionKey:[NSString stringWithFormat:@"URI:%@ ; not found",uri]}]);
+            dispatch_async(dispatch_get_main_queue(), ^{
+                block(nil,[NSError errorWithDomain:@"NSERROR_SOURCENOTFOUND_DOMAIN" code:-100 userInfo:@{NSLocalizedDescriptionKey:[NSString stringWithFormat:@"URI:%@ ; not found",uri]}]);
+            });
         }
     }];
 }
@@ -191,7 +196,10 @@
     [moduleManager afterModuleInit:^{
         Module *md = [weakmoduleManager findModuleWithModuleName:name];
         if (!md) {
-            block(nil,[NSError errorWithDomain:@"NSERROR_MODULENOTFOUND_DOMAIN" code:-100 userInfo:@{NSLocalizedDescriptionKey:[NSString stringWithFormat:@"MODULE:%@ ; not found",name]}]);
+            dispatch_async(dispatch_get_main_queue(), ^{
+                block(nil,[NSError errorWithDomain:@"NSERROR_MODULENOTFOUND_DOMAIN" code:-100 userInfo:@{NSLocalizedDescriptionKey:[NSString stringWithFormat:@"MODULE:%@ ; not found",name]}]);
+            });
+            
         }
         [weakSelf rescurseDepend:md fileName:fileName complete:block];
     }];
@@ -212,7 +220,9 @@
         }
     }
     if (ready) {
-        block([moduleManager findDataWithModuleName:md.moduleName fileName:fileName],nil);
+        dispatch_async(dispatch_get_main_queue(), ^{
+            block([moduleManager findDataWithModuleName:md.moduleName fileName:fileName],nil);
+        });
     }else
     {
         [netWorkManager addTasks:urls tag:@"max" moduleComplete:^(NSString *url, NSData *data, NSError *error) {
@@ -227,13 +237,16 @@
             }
             if (ready) {
                 NSData *tdata = [weakModuleManager findDataWithModuleName:md.moduleName fileName:fileName];
-                if (tdata) {
-                    block(tdata,nil);
-                }else
-                    block(nil,[NSError errorWithDomain:@"NSERROR_MODULENOTFOUND_DOMAIN" code:-100 userInfo:@{NSLocalizedDescriptionKey:[NSString stringWithFormat:@"MODULE:%@ FILE SOURCE:%@ ; not found",md.moduleName,fileName]}]);
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    if (tdata) {
+                        block(tdata,nil);
+                    }else
+                        block(nil,[NSError errorWithDomain:@"NSERROR_MODULENOTFOUND_DOMAIN" code:-100 userInfo:@{NSLocalizedDescriptionKey:[NSString stringWithFormat:@"MODULE:%@ FILE SOURCE:%@ ; not found",md.moduleName,fileName]}]);
+                });
             }else
-                block(nil,[NSError errorWithDomain:@"NSERROR_MODULENOTFOUND_DOMAIN" code:-100 userInfo:@{NSLocalizedDescriptionKey:[NSString stringWithFormat:@"MODULE:%@ FILE SOURCE:%@ ; not found",md.moduleName,fileName]}]);
-            
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    block(nil,[NSError errorWithDomain:@"NSERROR_MODULENOTFOUND_DOMAIN" code:-100 userInfo:@{NSLocalizedDescriptionKey:[NSString stringWithFormat:@"MODULE:%@ FILE SOURCE:%@ ; not found",md.moduleName,fileName]}]);
+                });
         }];
     }
 }

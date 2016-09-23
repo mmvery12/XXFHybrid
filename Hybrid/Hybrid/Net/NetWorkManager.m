@@ -87,7 +87,9 @@
     request.HTTPMethod = @"POST";
     NSURLResponse *response;
     NSError *error;
+    NSLog(@">>>>>>>Begin receive data %@",url);
     NSData *receivedata = [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:&error];
+    NSLog(@"<<<<<<<End receive data %@",url);
     if (receivedata && !error) {
         @synchronized (operDict) {
             for (void (^block)(NSData *data,NSError *error) in [operDict objectForKey:url][@"blocks"]) {
@@ -103,6 +105,10 @@
 
 -(void)addTasks:(NSArray <NSString *> *)urlStrs tag:(NSString *)tag moduleComplete:(void (^)(NSString *url,NSData *data,NSError *error))oneblock allcomplete:(void (^)(void))block;
 {
+    if (![urlStrs isKindOfClass:[NSArray class]] ||
+        urlStrs.count==0) {
+        if (block) block();
+    }
     @synchronized (tasksCheckTag) {
         NSMutableArray *temp = [NSMutableArray new];
         for (NSString *url in urlStrs) {
@@ -113,11 +119,11 @@
         __weak typeof(tasksCheckTag) weaktasksCheckTag = tasksCheckTag;
         for (NSString *url in temp) {
             [self addTask:url complete:^(NSData *data, NSError *error) {
-                oneblock(url,data,error);
+                if (oneblock) oneblock(url,data,error);
                 @synchronized (weaktasksCheckTag) {
                     [[weaktasksCheckTag objectForKey:tag] removeObject:url];
                 }
-                if ([weakSelf isAllTaskFinishWithTag:tag]) {
+                if ([weakSelf isAllTaskFinishWithTag:tag] && block) {
                     block();
                 }
             }];

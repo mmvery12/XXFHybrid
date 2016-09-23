@@ -44,39 +44,41 @@
 -(NSArray <Module *> *)analyzeModules:(NSArray <Module *> *)modules_;
 {
     NSMutableArray *needUpdate = [NSMutableArray new];
-    if (modules_.count==0 && modules.count==0) {
-        _refreshFlag = YES;
-        if (cfRunloop){
-            CFRunLoopStop(cfRunloop);
-        }
-    }else
-    {
-        NSMutableArray *normal = [NSMutableArray new];
-        {
-            for (Module *md in modules_) {
-                Module *mmd = [self findModuleWithModuleName:md.moduleName];
-                if (mmd && [md.version isEqualToString:mmd.version] && [self isModuleReady:mmd]) {
-                    [normal addObject:mmd];
-                }else
-                    [needUpdate addObject:md];
+    @synchronized (modules) {
+        if (modules_.count==0 && modules.count==0) {
+            _refreshFlag = YES;
+            if (cfRunloop){
+                CFRunLoopStop(cfRunloop);
             }
-        }
-        [modules removeObjectsInArray:normal];
-        [modules removeObjectsInArray:needUpdate];
-        for (Module *md in modules) {
-            [self deleteModule:md];
-        }
-        [modules removeAllObjects];
-        [modules addObjectsFromArray:normal];
-        [modules addObjectsFromArray:needUpdate];
+        }else
         {
-            NSData *archiveCarPriceData = [NSKeyedArchiver archivedDataWithRootObject:modules];
-            [[NSUserDefaults standardUserDefaults] setObject:archiveCarPriceData forKey:@"modules"];
-            [[NSUserDefaults standardUserDefaults] synchronize];
-        }
-        _refreshFlag = YES;
-        if (cfRunloop){
-            CFRunLoopStop(cfRunloop);
+            NSMutableArray *normal = [NSMutableArray new];
+            {
+                for (Module *md in modules_) {
+                    Module *mmd = [self findModuleWithModuleName:md.moduleName];
+                    if (mmd && [md.version isEqualToString:mmd.version] && [self isModuleReady:mmd]) {
+                        [normal addObject:mmd];
+                    }else
+                        [needUpdate addObject:md];
+                }
+            }
+            [modules removeObjectsInArray:normal];
+            [modules removeObjectsInArray:needUpdate];
+            for (Module *md in modules) {
+                [self deleteModule:md];
+            }
+            [modules removeAllObjects];
+            [modules addObjectsFromArray:normal];
+            [modules addObjectsFromArray:needUpdate];
+            {
+                NSData *archiveCarPriceData = [NSKeyedArchiver archivedDataWithRootObject:modules];
+                [[NSUserDefaults standardUserDefaults] setObject:archiveCarPriceData forKey:@"modules"];
+                [[NSUserDefaults standardUserDefaults] synchronize];
+            }
+            _refreshFlag = YES;
+            if (cfRunloop){
+                CFRunLoopStop(cfRunloop);
+            }
         }
     }
     return needUpdate;

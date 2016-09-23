@@ -3,8 +3,7 @@
                 {
                 "identify": "xxxxx",
                 "moduleName": "moduleA",
-                "remoteurl": "https://download.microsoft.com/download/0/A/F/0AFB5316-3062-494A-AB78-7FB0D4461357/7601.17514.101119-1850_Update_Sp_Wave1-GRMSP1.1_DVD.iso",
-                "version": "1.0.0",
+                "remoteurl": "http://7nj1i4.com1.z0.glb.clouddn.com/Eke-Core_change.ipa",
                 "depend": [
                            "moduleC",
                            "moduleB"
