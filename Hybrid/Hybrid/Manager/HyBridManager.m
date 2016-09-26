@@ -78,9 +78,9 @@
     [[HyBridManager Manager] start];
 }
 
-+(BOOL)HandleWebViewURL:(NSURL *)url CommExcResult:(void (^)(id commresult))block;
++(BOOL)HandleWebViewURL:(NSURL *)url CommExcWebView:(id)webview
 {
-    return [[HyBridManager Manager] handleWebViewURL:url CommExcResult:block];
+    return [[HyBridManager Manager] handleWebViewURL:url CommExcWebView:webview];
 }
 
 +(void)UseResourceWithURI:(NSString *)uri complete:(void (^)(NSData *source, NSError *error))block;
@@ -141,29 +141,33 @@
     }];
 }
 
--(BOOL)handleWebViewURL:(NSURL *)url CommExcResult:(void (^)(id commresult))block;
+-(BOOL)handleWebViewURL:(NSURL *)url_ CommExcWebView:(id)webview;
 {
-    NSString *scheme = url.scheme;
-    NSString *host = url.host;
-    NSString *params = url.query;
-    if ([scheme isEqualToString:urlSchemeStr] &&
-        [host isEqualToString:urlHostStr] &&
-        [params hasPrefix:urlParamsStr]) {
+    NSString *scheme = url_.scheme;
+    NSString *host = url_.host;
+    NSString *params = url_.query;
+    if ([scheme isEqualToString:keyUrlScheme] &&
+        [host isEqualToString:keyUrlHost] &&
+        [params hasPrefix:keyUrlParams]) {
         NSError *error;
-        NSDictionary *dict = [NSJSONSerialization JSONObjectWithData:[[[params componentsSeparatedByString:urlParamsStr] lastObject] dataUsingEncoding:NSUTF8StringEncoding] options:0 error:&error];
+        NSString *str = [url_.absoluteString stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+        NSDictionary *dict = [NSJSONSerialization JSONObjectWithData:[[[str componentsSeparatedByString:[NSString stringWithFormat:@"%@=",keyUrlParams]] lastObject] dataUsingEncoding:NSUTF8StringEncoding] options:0 error:&error];
         
-        Class cls = dict[commClassName];
-        SEL sel = NSSelectorFromString(dict[CommSelNameConfig]);
-        id params = dict[CommParamsConfig];
-        id identify = dict[CommJsCallBackIdentifyConfig];
+        Class cls = NSClassFromString(@"Comm");
+        NSAssert(cls, @"[ERROR] Class 'Comm' not found in project!");
+        SEL sel = NSSelectorFromString([NSString stringWithFormat:@"com%@:p2:p3:p4:",dict[keyCommServiceName]]);
+        id params = dict[keyCommParams];
+        id cbsel = dict[keyCommJsCallBackMethodName];
+        id identify = dict[keyCommJsCallBackIdentify];
         
-        NSMethodSignature  *signature = [cls instanceMethodSignatureForSelector:sel];
-        NSInvocation *inv = [NSInvocation invocationWithMethodSignature:signature];
+        NSMethodSignature *sig = [cls methodSignatureForSelector:sel];
+        NSInvocation *inv = [NSInvocation invocationWithMethodSignature:sig];
         [inv setSelector:sel];
         [inv setTarget:cls];
         [inv setArgument:&params atIndex:2];
-        [inv setArgument:&identify atIndex:3];
-        [inv setArgument:&block atIndex:4];
+        [inv setArgument:&cbsel atIndex:3];
+        [inv setArgument:&identify atIndex:4];
+        [inv setArgument:&webview atIndex:5];
         [inv invoke];
         return NO;
     }

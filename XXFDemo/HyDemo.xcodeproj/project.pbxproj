@@ -18,6 +18,7 @@
 		69783F571D93EB8A00EFCD3B /* Hybrid.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 69783F561D93EB8A00EFCD3B /* Hybrid.framework */; };
 		69783F581D93EB8A00EFCD3B /* Hybrid.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 69783F561D93EB8A00EFCD3B /* Hybrid.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		69917A0E1D9281C500DD0A05 /* Config.json in Resources */ = {isa = PBXBuildFile; fileRef = 69917A0D1D9281C500DD0A05 /* Config.json */; };
+		69AA55AC1D9911EC00B917EC /* URL.json in Resources */ = {isa = PBXBuildFile; fileRef = 69AA55AB1D9911EC00B917EC /* URL.json */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -70,6 +71,7 @@
 		6954F6A31D8FDEFB00EE3C94 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		69783F561D93EB8A00EFCD3B /* Hybrid.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; name = Hybrid.framework; path = "/Users/jd/Library/Developer/Xcode/DerivedData/XXF-fmgtbobbhpxxmffnlsxkzfkrlhgk/Build/Products/Debug-iphoneos/Hybrid.framework"; sourceTree = "<absolute>"; };
 		69917A0D1D9281C500DD0A05 /* Config.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = Config.json; sourceTree = "<group>"; };
+		69AA55AB1D9911EC00B917EC /* URL.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = URL.json; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -106,6 +108,7 @@
 				6954F6951D8FDEFB00EE3C94 /* HyDemoTests */,
 				6954F6A01D8FDEFB00EE3C94 /* HyDemoUITests */,
 				6954F67A1D8FDEFB00EE3C94 /* Products */,
+				69AA55AB1D9911EC00B917EC /* URL.json */,
 				69917A0D1D9281C500DD0A05 /* Config.json */,
 			);
 			sourceTree = "<group>";
@@ -273,6 +276,7 @@
 				69917A0E1D9281C500DD0A05 /* Config.json in Resources */,
 				6954F6891D8FDEFB00EE3C94 /* Assets.xcassets in Resources */,
 				6954F6871D8FDEFB00EE3C94 /* Main.storyboard in Resources */,
+				69AA55AC1D9911EC00B917EC /* URL.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

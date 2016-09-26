@@ -52,12 +52,14 @@
                 }
               )
  }
+ Comm部分运行示意图：
+ 
 ***********************/
 @interface HyBridManager : NSObject
 +(instancetype)Manager;
 +(void)Start;//开始使用
 //解析webview中传递来的url，具体格式详见CommFormatConfig.h
-+(BOOL)HandleWebViewURL:(NSURL *)url CommExcResult:(void (^)(id commresult))block;
++(BOOL)HandleWebViewURL:(NSURL *)url CommExcWebView:(id)webview;
 // @uri 下发的文件体系中顶级文件夹直到资源的完整相对路径
 +(void)UseResourceWithURI:(NSString *)uri complete:(void (^)(NSData *source, NSError *error))block;
 //返回入参modulename，filename对应的文件数据

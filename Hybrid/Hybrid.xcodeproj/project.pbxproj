@@ -13,11 +13,8 @@
 		699179E41D91106C00DD0A05 /* NetWorkManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 699179D31D91106C00DD0A05 /* NetWorkManager.m */; };
 		699179E51D91106C00DD0A05 /* Hybrid.h in Headers */ = {isa = PBXBuildFile; fileRef = 699179D51D91106C00DD0A05 /* Hybrid.h */; };
 		699179E61D91106C00DD0A05 /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 699179D61D91106C00DD0A05 /* Info.plist */; };
-		699179E91D91108700DD0A05 /* Com.h in Headers */ = {isa = PBXBuildFile; fileRef = 699179E71D91108700DD0A05 /* Com.h */; };
-		699179EA1D91108700DD0A05 /* Com.m in Sources */ = {isa = PBXBuildFile; fileRef = 699179E81D91108700DD0A05 /* Com.m */; };
-		699179F11D911C4100DD0A05 /* CommFormatConfig.h in Headers */ = {isa = PBXBuildFile; fileRef = 699179F01D911C4100DD0A05 /* CommFormatConfig.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		699179F41D91318E00DD0A05 /* Exchange.h in Headers */ = {isa = PBXBuildFile; fileRef = 699179F21D91318E00DD0A05 /* Exchange.h */; };
-		699179F51D91318E00DD0A05 /* Exchange.m in Sources */ = {isa = PBXBuildFile; fileRef = 699179F31D91318E00DD0A05 /* Exchange.m */; };
+		699179E91D91108700DD0A05 /* Comm.h in Headers */ = {isa = PBXBuildFile; fileRef = 699179E71D91108700DD0A05 /* Comm.h */; };
+		699179EA1D91108700DD0A05 /* Comm.m in Sources */ = {isa = PBXBuildFile; fileRef = 699179E81D91108700DD0A05 /* Comm.m */; };
 		69917A021D92278D00DD0A05 /* ModuleManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 699179FB1D92278D00DD0A05 /* ModuleManager.h */; };
 		69917A031D92278D00DD0A05 /* ModuleManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 699179FC1D92278D00DD0A05 /* ModuleManager.m */; };
 		69917A041D92278D00DD0A05 /* ModuleSelect.h in Headers */ = {isa = PBXBuildFile; fileRef = 699179FD1D92278D00DD0A05 /* ModuleSelect.h */; };
@@ -25,6 +22,9 @@
 		69917A061D92278D00DD0A05 /* Module.m in Sources */ = {isa = PBXBuildFile; fileRef = 699179FF1D92278D00DD0A05 /* Module.m */; };
 		69917A071D92278D00DD0A05 /* Zip.h in Headers */ = {isa = PBXBuildFile; fileRef = 69917A001D92278D00DD0A05 /* Zip.h */; };
 		69917A081D92278D00DD0A05 /* Zip.m in Sources */ = {isa = PBXBuildFile; fileRef = 69917A011D92278D00DD0A05 /* Zip.m */; };
+		69AA55A91D990E1400B917EC /* CommFormatConfig.h in Headers */ = {isa = PBXBuildFile; fileRef = 69AA55A81D990E1400B917EC /* CommFormatConfig.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		69DBBA951D979BFD006711B9 /* WhiteHouseURLProtocol.h in Headers */ = {isa = PBXBuildFile; fileRef = 69DBBA931D979BFD006711B9 /* WhiteHouseURLProtocol.h */; };
+		69DBBA961D979BFD006711B9 /* WhiteHouseURLProtocol.m in Sources */ = {isa = PBXBuildFile; fileRef = 69DBBA941D979BFD006711B9 /* WhiteHouseURLProtocol.m */; };
 		69F2E7B21D90EC5D00603610 /* Hybrid.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 69F2E7A71D90EC5D00603610 /* Hybrid.framework */; };
 		69F2E7B71D90EC5D00603610 /* HybridTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 69F2E7B61D90EC5D00603610 /* HybridTests.m */; };
 /* End PBXBuildFile section */
@@ -46,11 +46,8 @@
 		699179D31D91106C00DD0A05 /* NetWorkManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NetWorkManager.m; sourceTree = "<group>"; };
 		699179D51D91106C00DD0A05 /* Hybrid.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Hybrid.h; sourceTree = "<group>"; };
 		699179D61D91106C00DD0A05 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		699179E71D91108700DD0A05 /* Com.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Com.h; sourceTree = "<group>"; };
-		699179E81D91108700DD0A05 /* Com.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Com.m; sourceTree = "<group>"; };
-		699179F01D911C4100DD0A05 /* CommFormatConfig.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CommFormatConfig.h; sourceTree = "<group>"; };
-		699179F21D91318E00DD0A05 /* Exchange.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Exchange.h; sourceTree = "<group>"; };
-		699179F31D91318E00DD0A05 /* Exchange.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Exchange.m; sourceTree = "<group>"; };
+		699179E71D91108700DD0A05 /* Comm.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Comm.h; sourceTree = "<group>"; };
+		699179E81D91108700DD0A05 /* Comm.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Comm.m; sourceTree = "<group>"; };
 		699179FB1D92278D00DD0A05 /* ModuleManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ModuleManager.h; sourceTree = "<group>"; };
 		699179FC1D92278D00DD0A05 /* ModuleManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ModuleManager.m; sourceTree = "<group>"; };
 		699179FD1D92278D00DD0A05 /* ModuleSelect.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ModuleSelect.h; sourceTree = "<group>"; };
@@ -58,6 +55,9 @@
 		699179FF1D92278D00DD0A05 /* Module.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Module.m; sourceTree = "<group>"; };
 		69917A001D92278D00DD0A05 /* Zip.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Zip.h; sourceTree = "<group>"; };
 		69917A011D92278D00DD0A05 /* Zip.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Zip.m; sourceTree = "<group>"; };
+		69AA55A81D990E1400B917EC /* CommFormatConfig.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CommFormatConfig.h; sourceTree = "<group>"; };
+		69DBBA931D979BFD006711B9 /* WhiteHouseURLProtocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WhiteHouseURLProtocol.h; sourceTree = "<group>"; };
+		69DBBA941D979BFD006711B9 /* WhiteHouseURLProtocol.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WhiteHouseURLProtocol.m; sourceTree = "<group>"; };
 		69F2E7A71D90EC5D00603610 /* Hybrid.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Hybrid.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		69F2E7B11D90EC5D00603610 /* HybridTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = HybridTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		69F2E7B61D90EC5D00603610 /* HybridTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = HybridTests.m; sourceTree = "<group>"; };
@@ -86,8 +86,9 @@
 		699179C21D91106C00DD0A05 /* Com */ = {
 			isa = PBXGroup;
 			children = (
-				699179E71D91108700DD0A05 /* Com.h */,
-				699179E81D91108700DD0A05 /* Com.m */,
+				69AA55A81D990E1400B917EC /* CommFormatConfig.h */,
+				699179E71D91108700DD0A05 /* Comm.h */,
+				699179E81D91108700DD0A05 /* Comm.m */,
 			);
 			path = Com;
 			sourceTree = "<group>";
@@ -97,8 +98,6 @@
 			children = (
 				699179CF1D91106C00DD0A05 /* HyBridManager.h */,
 				699179D01D91106C00DD0A05 /* HyBridManager.m */,
-				699179F21D91318E00DD0A05 /* Exchange.h */,
-				699179F31D91318E00DD0A05 /* Exchange.m */,
 			);
 			path = Manager;
 			sourceTree = "<group>";
@@ -121,14 +120,6 @@
 			path = Source;
 			sourceTree = "<group>";
 		};
-		699179EB1D9115D100DD0A05 /* Conf */ = {
-			isa = PBXGroup;
-			children = (
-				699179F01D911C4100DD0A05 /* CommFormatConfig.h */,
-			);
-			path = Conf;
-			sourceTree = "<group>";
-		};
 		699179FA1D92278D00DD0A05 /* Module */ = {
 			isa = PBXGroup;
 			children = (
@@ -141,6 +132,15 @@
 				69917A011D92278D00DD0A05 /* Zip.m */,
 			);
 			path = Module;
+			sourceTree = "<group>";
+		};
+		69DBBA921D979BFD006711B9 /* URLProtocol */ = {
+			isa = PBXGroup;
+			children = (
+				69DBBA931D979BFD006711B9 /* WhiteHouseURLProtocol.h */,
+				69DBBA941D979BFD006711B9 /* WhiteHouseURLProtocol.m */,
+			);
+			path = URLProtocol;
 			sourceTree = "<group>";
 		};
 		69F2E79D1D90EC5D00603610 = {
@@ -164,8 +164,8 @@
 		69F2E7A91D90EC5D00603610 /* Hybrid */ = {
 			isa = PBXGroup;
 			children = (
+				69DBBA921D979BFD006711B9 /* URLProtocol */,
 				699179FA1D92278D00DD0A05 /* Module */,
-				699179EB1D9115D100DD0A05 /* Conf */,
 				699179C21D91106C00DD0A05 /* Com */,
 				699179CE1D91106C00DD0A05 /* Manager */,
 				699179D11D91106C00DD0A05 /* Net */,
@@ -191,15 +191,15 @@
 			buildActionMask = 2147483647;
 			files = (
 				699179E11D91106C00DD0A05 /* HyBridManager.h in Headers */,
-				699179F11D911C4100DD0A05 /* CommFormatConfig.h in Headers */,
+				69AA55A91D990E1400B917EC /* CommFormatConfig.h in Headers */,
 				699179E51D91106C00DD0A05 /* Hybrid.h in Headers */,
 				69917A021D92278D00DD0A05 /* ModuleManager.h in Headers */,
 				699179E31D91106C00DD0A05 /* NetWorkManager.h in Headers */,
+				69DBBA951D979BFD006711B9 /* WhiteHouseURLProtocol.h in Headers */,
 				69917A051D92278D00DD0A05 /* Module.h in Headers */,
 				69917A071D92278D00DD0A05 /* Zip.h in Headers */,
-				699179E91D91108700DD0A05 /* Com.h in Headers */,
+				699179E91D91108700DD0A05 /* Comm.h in Headers */,
 				69917A041D92278D00DD0A05 /* ModuleSelect.h in Headers */,
-				699179F41D91318E00DD0A05 /* Exchange.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -301,9 +301,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				69917A081D92278D00DD0A05 /* Zip.m in Sources */,
-				699179F51D91318E00DD0A05 /* Exchange.m in Sources */,
 				699179E41D91106C00DD0A05 /* NetWorkManager.m in Sources */,
-				699179EA1D91108700DD0A05 /* Com.m in Sources */,
+				699179EA1D91108700DD0A05 /* Comm.m in Sources */,
+				69DBBA961D979BFD006711B9 /* WhiteHouseURLProtocol.m in Sources */,
 				69917A061D92278D00DD0A05 /* Module.m in Sources */,
 				69917A031D92278D00DD0A05 /* ModuleManager.m in Sources */,
 				699179E21D91106C00DD0A05 /* HyBridManager.m in Sources */,

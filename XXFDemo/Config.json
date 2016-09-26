@@ -3,7 +3,7 @@
                 {
                 "identify": "xxxxx",
                 "moduleName": "moduleA",
-                "remoteurl": "http://7nj1i4.com1.z0.glb.clouddn.com/Eke-Core_change.ipa",
+                "remoteurl": "",
                 "depend": [
                            "moduleC",
                            "moduleB"

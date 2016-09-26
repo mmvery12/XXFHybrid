@@ -8,7 +8,7 @@
 
 #import "ViewController.h"
 #import <Hybrid/HyBridManager.h>
-@interface ViewController ()
+@interface ViewController ()<UIWebViewDelegate>
 
 @end
 
@@ -17,12 +17,10 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    UIButton *btn = [UIButton new];
-    [btn setTitle:@"123" forState:UIControlStateNormal];
-    [btn setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
-    [btn addTarget:self action:@selector(xxxx) forControlEvents:UIControlEventTouchUpInside];
-    btn.frame = CGRectMake(0, 0, 300, 300);
-    [self.view addSubview:btn];
+    UIWebView *webview = [[UIWebView alloc] initWithFrame:self.view.bounds];
+    [self.view addSubview:webview];
+    [webview loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:@"http://www.baidu.com"]]];
+    webview.delegate = self;
 }
 
 - (void)didReceiveMemoryWarning {
@@ -34,6 +32,27 @@
     [HyBridManager UseResourceWithModuleName:@"moduleA" fileName:@"xxxxx.a" complete:^(NSData *source, NSError *error) {
         
     }];
+}
+
+- (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType;
+{
+    NSData * data = [NSData dataWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"URL" ofType:@"json"]];
+    NSDictionary *dict = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
+    data = [NSJSONSerialization dataWithJSONObject:dict options:0 error:nil];
+    NSString *str = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+    str = [NSString stringWithFormat:@"%@://%@?%@=%@",keyUrlScheme,keyUrlHost,keyUrlParams,str];
+    str = [str stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+    NSURL *temp = [NSURL URLWithString:str];
+    return [HyBridManager HandleWebViewURL:temp CommExcWebView:webView];
+}
+- (void)webViewDidStartLoad:(UIWebView *)webView;
+{
+}
+- (void)webViewDidFinishLoad:(UIWebView *)webView;
+{
+}
+- (void)webView:(UIWebView *)webView didFailLoadWithError:(nullable NSError *)error;
+{
 }
 
 @end
