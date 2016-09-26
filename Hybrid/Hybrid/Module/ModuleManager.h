@@ -22,8 +22,10 @@ static NSString *const EFolderPath = @"EFolderPath";
 //返回指定module名、文件名对应的数据
 -(NSData *)findDataWithModuleName:(NSString *)moduleName fileName:(NSString *)fileName;
 //将moduel解压缩，写入文件夹
+//请勿在主线程执行次函数，有写文件操作
 -(BOOL)storageModule:(Module *)module data:(NSData *)data;
 //判断module是否可用
+//请勿在主线程执行次函数，有runloop等待操作
 -(BOOL)isModuleReady:(Module *)module;
 //module确定后才能执行交互操作，不然module中找不到对应的module
 -(void)afterModuleInit:(dispatch_block_t)block;

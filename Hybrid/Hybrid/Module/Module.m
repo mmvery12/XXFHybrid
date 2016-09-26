@@ -24,6 +24,7 @@
     [aCoder encodeObject:self.version forKey:@"version"];
     [aCoder encodeObject:self.type forKey:@"type"];
     [aCoder encodeObject:self.depend forKey:@"depend"];
+    [aCoder encodeObject:@(self.status) forKey:@"status"];
 }
 
 - (nullable instancetype)initWithCoder:(NSCoder *)aDecoder;
@@ -37,6 +38,7 @@
         self.version = [aDecoder decodeObjectForKey:@"version"];
         self.type = [aDecoder decodeObjectForKey:@"type"];
         self.depend = [aDecoder decodeObjectForKey:@"depend"];
+        self.status = [[aDecoder decodeObjectForKey:@"status"] integerValue];
     }
     return self;
 }

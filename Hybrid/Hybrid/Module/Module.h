@@ -12,6 +12,13 @@
 /*************************
  module映射的数据元组
  *************************/
+
+typedef NS_ENUM(NSInteger,ModuleStatus) {
+    ModuleStatusNone,
+    ModuleStatusNeedArchize,
+    ModuleStatusArchizeing,
+    ModuleStatusReady
+};
 @interface Module : NSObject<ModuleSelect,NSCoding >
 @property (nonatomic,copy)NSString *identify;
 @property (nonatomic,copy)NSString *moduleName;
@@ -19,4 +26,5 @@
 @property (nonatomic,copy)NSString *version;
 @property (nonatomic,copy)NSString *type;
 @property (nonatomic,copy)NSMutableArray *depend;
+@property (nonatomic,assign)ModuleStatus status;
 @end

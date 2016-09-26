@@ -132,11 +132,18 @@ static NSString *const TFolderPath = @"TFolderPath";
     NSString *path = [NSString stringWithFormat:@"%@/%@",[self cachePath],module.moduleName];
     [self createpath:path];
     if ([needArchiveType containsObject:module.type]) {//解压
+        module.status = ModuleStatusNeedArchize;
         path = [NSString stringWithFormat:@"%@/%@",[self tcachePath],module.moduleName];
+        [self createpath:path];
         
     }else
     {//直写
-        return [data writeToFile:[NSString stringWithFormat:@"%@/%@.a",path,module.identify] atomically:YES];
+        BOOL success = [data writeToFile:[NSString stringWithFormat:@"%@/%@.a",path,module.identify] atomically:YES];;
+        if (success) {
+            module.status = ModuleStatusReady;
+        }else
+            module.status = ModuleStatusNone;
+        return success;
     }
     return NO;
 }
