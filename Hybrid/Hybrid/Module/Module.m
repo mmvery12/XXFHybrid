@@ -22,6 +22,7 @@
     [aCoder encodeObject:self.moduleName forKey:@"moduleName"];
     [aCoder encodeObject:self.remoteurl forKey:@"remoteurl"];
     [aCoder encodeObject:self.version forKey:@"version"];
+    [aCoder encodeObject:self.type forKey:@"type"];
     [aCoder encodeObject:self.depend forKey:@"depend"];
 }
 
@@ -34,6 +35,7 @@
         self.moduleName = [aDecoder decodeObjectForKey:@"moduleName"];
         self.remoteurl = [aDecoder decodeObjectForKey:@"remoteurl"];
         self.version = [aDecoder decodeObjectForKey:@"version"];
+        self.type = [aDecoder decodeObjectForKey:@"type"];
         self.depend = [aDecoder decodeObjectForKey:@"depend"];
     }
     return self;

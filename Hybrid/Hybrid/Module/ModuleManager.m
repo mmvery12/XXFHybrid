@@ -8,11 +8,13 @@
 
 #import "ModuleManager.h"
 #import "Module.h"
+static NSString *const TFolderPath = @"TFolderPath";
 @interface ModuleManager ()
 {
     NSMutableArray *modules;
     NSFileManager *fileManager;
     CFRunLoopRef cfRunloop;
+    NSSet *needArchiveType;
 }
 @property (atomic,assign)BOOL refreshFlag;
 @end
@@ -25,6 +27,7 @@
     if (self) {
         modules = [NSMutableArray new];
         fileManager = [NSFileManager defaultManager];
+        needArchiveType = [NSSet setWithObjects:@"zip",@"rar", nil];
     }
     return self;
 }
@@ -56,7 +59,9 @@
             {
                 for (Module *md in modules_) {
                     Module *mmd = [self findModuleWithModuleName:md.moduleName];
-                    if (mmd && [md.version isEqualToString:mmd.version] && [self isModuleReady:mmd]) {
+                    if (mmd &&
+                        [md.version isEqualToString:mmd.version] &&
+                        [self isModuleReady:mmd]) {
                         [normal addObject:mmd];
                     }else
                         [needUpdate addObject:md];
@@ -95,6 +100,16 @@
     return nil;
 }
 
+-(Module *)findModuleWithRemoteUrl:(NSString *)remoteurl;
+{
+    for (Module *md in modules) {
+        if ([md.remoteurl isEqualToString:remoteurl]) {
+            return md;
+        }
+    }
+    return nil;
+}
+
 -(NSData *)findDataWithModuleName:(NSString *)moduleName fileName:(NSString *)fileName;
 {
     if (![fileName isKindOfClass:[NSString class]]) {
@@ -111,11 +126,19 @@
     return [NSData dataWithContentsOfFile:path];
 }
 
--(BOOL)zipArchiveModule:(Module *)module data:(NSData *)data;
+-(BOOL)storageModule:(Module *)module data:(NSData *)data;
 {
+    if (!module) return NO;
     NSString *path = [NSString stringWithFormat:@"%@/%@",[self cachePath],module.moduleName];
     [self createpath:path];
-    return [data writeToFile:[NSString stringWithFormat:@"%@/%@.a",path,module.identify] atomically:YES];
+    if ([needArchiveType containsObject:module.type]) {//解压
+        path = [NSString stringWithFormat:@"%@/%@",[self tcachePath],module.moduleName];
+        
+    }else
+    {//直写
+        return [data writeToFile:[NSString stringWithFormat:@"%@/%@.a",path,module.identify] atomically:YES];
+    }
+    return NO;
 }
 
 -(void)deleteModule:(Module *)module_
@@ -147,6 +170,13 @@
 -(NSString *)cachePath
 {
     NSString *path = [NSString stringWithFormat:@"%@/%@",[NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) firstObject],EFolderPath];
+    [self createpath:path];
+    return path;
+}
+
+-(NSString *)tcachePath
+{
+    NSString *path = [NSString stringWithFormat:@"%@/%@",[NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) firstObject],TFolderPath];
     [self createpath:path];
     return path;
 }

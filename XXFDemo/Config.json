@@ -4,6 +4,8 @@
                 "identify": "xxxxx",
                 "moduleName": "moduleA",
                 "remoteurl": "",
+                "version": "1.0.0",
+                "type" : "jpeg",
                 "depend": [
                            "moduleC",
                            "moduleB"
@@ -12,8 +14,9 @@
                 {
                 "identify": " xxxxx",
                 "moduleName": "moduleB",
-                "remoteurl": "http://img30.360buyimg.com/jdwork/jfs/t3214/136/2299661031/96531/df1830e4/57df4683N659a9803.png",
+                "remoteurl": "http://img14.360buyimg.com/cms/jfs/t3163/365/2516901468/167838/6549aff2/57e24d21N624f138b.jpg",
                 "version": "1.0.0",
+                "type" : "jpeg",
                 "depend": [
                            "moduleD"
                            ]
@@ -23,6 +26,7 @@
                 "moduleName": "moduleC",
                 "remoteurl": "http://img30.360buyimg.com/jdwork/jfs/t3214/136/2299661031/96531/df1830e4/57df4683N659a9803.png",
                 "version": "1.0.0",
+                "type" : "jpeg",
                 "depend": []
                 },
                 {
@@ -30,6 +34,7 @@
                 "moduleName": "moduleD",
                 "remoteurl": "http://img30.360buyimg.com/jdwork/jfs/t3295/328/2378959747/209593/a102beca/57e0e8eeN6e03ada9.jpg",
                 "version": "1.0.0",
+                "type" : "jpeg",
                 "depend": [
                            "moduleA"
                            ]

@@ -130,11 +130,8 @@
     }
     [netWorkManager addTasks:temp tag:@"mainDownLoad" moduleComplete:^(NSString *url,NSData *data, NSError *error) {
         if (!error) {
-            for (Module *module in modules) {
-                if ([url isEqualToString:module.remoteurl]) {
-                    [weakModuleManager zipArchiveModule:module data:data];
-                }
-            }
+            Module *module = [weakModuleManager findModuleWithRemoteUrl:url];
+            [weakModuleManager storageModule:module data:data];
         }
     } allcomplete:^{
         NSLog(@"all allcomplete %@",[NSDate date]);
@@ -232,6 +229,7 @@
         [netWorkManager addTasks:urls tag:@"max" moduleComplete:^(NSString *url, NSData *data, NSError *error) {
             NSLog(@"%@",url);
         } allcomplete:^{
+            //TODO : 解压的线程同步之后才走下面的logic
             ready = YES;
             for (Module *module in arrary) {
                 if (![weakModuleManager isModuleReady:module]) {
@@ -281,6 +279,7 @@
         module.moduleName = tdict[@"moduleName"];
         module.remoteurl = tdict[@"remoteurl"];
         module.version = tdict[@"version"];
+        module.type = tdict[@"type"];
         module.depend = tdict[@"depend"];
         [arr addObject:module];
     }

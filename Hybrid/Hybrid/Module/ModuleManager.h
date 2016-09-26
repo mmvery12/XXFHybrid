@@ -18,10 +18,11 @@ static NSString *const EFolderPath = @"EFolderPath";
 -(NSData *)findSourceAtRelativePath:(NSString *)path;
 //返回指定module名对应的module结构
 -(Module *)findModuleWithModuleName:(NSString *)moduleName;
+-(Module *)findModuleWithRemoteUrl:(NSString *)remoteurl;
 //返回指定module名、文件名对应的数据
 -(NSData *)findDataWithModuleName:(NSString *)moduleName fileName:(NSString *)fileName;
 //将moduel解压缩，写入文件夹
--(BOOL)zipArchiveModule:(Module *)module data:(NSData *)data;
+-(BOOL)storageModule:(Module *)module data:(NSData *)data;
 //判断module是否可用
 -(BOOL)isModuleReady:(Module *)module;
 //module确定后才能执行交互操作，不然module中找不到对应的module

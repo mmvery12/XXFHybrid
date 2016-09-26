@@ -22,6 +22,7 @@
                     moduleName = moduleA,
                     remoteurl = http://xxx.xxx,
                     version = 1.0.0,
+                    type = jpeg,
                     depend = (
                                 moduleC,
                                 moduleB
@@ -32,6 +33,7 @@
                     moduleName = moduleB,
                     remoteurl = http://xxx.xxx,
                     version = 1.0.0
+                    type = zip,
                     depend = ()
                 },
                 {
@@ -39,6 +41,7 @@
                     moduleName = moduleC,
                     remoteurl = http://xxx.xxx,
                     version = 1.0.0
+                    type = bundle,
                     depend = ()
                 },
                 {
@@ -46,6 +49,7 @@
                     moduleName = moduleD,
                     remoteurl = http://xxx.xxx,
                     version = 1.0.0
+                    type = jpeg,
                     depend = (
                                 moduleA
                              )

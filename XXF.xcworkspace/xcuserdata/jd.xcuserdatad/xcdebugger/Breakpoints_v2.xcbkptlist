@@ -10,12 +10,12 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Hybrid/Hybrid/Manager/HyBridManager.m"
-            timestampString = "496573308.800081"
+            timestampString = "496577000.263965"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "171"
-            endingLineNumber = "171"
-            landmarkName = "-handleWebViewURL:CommExcWebView:"
+            startingLineNumber = "132"
+            endingLineNumber = "132"
+            landmarkName = "-analyzeRemoteConfig:"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>
