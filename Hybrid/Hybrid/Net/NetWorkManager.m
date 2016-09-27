@@ -87,6 +87,21 @@
     if (receivedata && !error) {
         NSLog(@"one url end download %@",url);
         for (void (^block)(NSData *data,NSError *error) in [operDict objectForKey:url][@"blocks"]) {
+            /********
+             ＊＊＊＊＊＊＊＊此方法中会执行判断tasks的allcomplete的block回调，回调完成后才执行下一个url关联的block
+             如果单独的文件depence tasks请求先于hybridmanager的analyse之后的tasks请求，可能会有问题，因为在这个block中analyse的oneblock会执行解压方法
+             if (oneblock)
+             oneblock(url,data,error);
+             @synchronized (weaktasksCheckTag) {
+             [[weaktasksCheckTag objectForKey:tag] removeObject:url];
+             }
+             dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+             if ([weakSelf isAllTaskFinishWithTag:tag] && block) {
+             NSLog(@"all tasks end download %@",urlStrs);
+             block();
+             }
+             });
+             ********/
             block(receivedata,nil);
         }
         @synchronized (operDict) {
