@@ -9,5 +9,8 @@
 #import "Zip.h"
 
 @implementation Zip
-
++ (BOOL)unzipFileAtPath:(NSString *)path toDestination:(NSString *)destination overwrite:(BOOL)overwrite password:(nullable NSString *)password error:(NSError * *)error;
+{
+    return [SSZipArchive unzipFileAtPath:path toDestination:destination overwrite:overwrite password:path error:error];
+}
 @end

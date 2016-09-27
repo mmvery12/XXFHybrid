@@ -7,6 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
-
+#import <ZipArchive/ZipArchive.h>
 @interface Zip : NSObject
++ (BOOL)unzipFileAtPath:(NSString *)path toDestination:(NSString *)destination overwrite:(BOOL)overwrite password:(nullable NSString *)password error:(NSError * *)error;
 @end

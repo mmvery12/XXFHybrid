@@ -131,6 +131,7 @@
     [netWorkManager addTasks:temp tag:@"mainDownLoad" moduleComplete:^(NSString *url,NSData *data, NSError *error) {
         if (!error) {
             Module *module = [weakModuleManager findModuleWithRemoteUrl:url];
+            NSLog(@"storageModule %@ %@",module.type,module.remoteurl);
             [weakModuleManager storageModule:module data:data];
         }
     } allcomplete:^{
@@ -174,42 +175,46 @@
 -(void)useResourceWithURI:(NSString *)uri complete:(void (^)(NSData *source, NSError *error))block;
 {
     __weak typeof(moduleManager) weakmoduleManager = moduleManager;
-    [moduleManager afterModuleInit:^{
-        NSData *data = [weakmoduleManager findSourceAtRelativePath:uri];
-        if (data) {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                block(data,nil);
-            });
-            
-        }else
-        {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                block(nil,[NSError errorWithDomain:@"NSERROR_SOURCENOTFOUND_DOMAIN" code:-100 userInfo:@{NSLocalizedDescriptionKey:[NSString stringWithFormat:@"URI:%@ ; not found",uri]}]);
-            });
-        }
-    }];
+    dispatch_async(dispatch_get_global_queue(0, 0), ^{
+        [weakmoduleManager afterModuleInit:^{
+            NSData *data = [weakmoduleManager findSourceAtRelativePath:uri];
+            if (data) {
+                dispatch_async(dispatch_get_main_queue(), ^{
+                        block(data,nil);
+                });
+            }else
+            {
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    block(nil,[NSError errorWithDomain:@"NSERROR_SOURCENOTFOUND_DOMAIN" code:-100 userInfo:@{NSLocalizedDescriptionKey:[NSString stringWithFormat:@"URI:%@ ; not found",uri]}]);
+                });
+            }
+        }];
+    });
+    
 }
 
 -(void)useResourceWithModuleName:(NSString *)name fileName:(NSString *)fileName complete:(void (^)(NSData *source, NSError *error))block;
 {
     __weak typeof(moduleManager) weakmoduleManager = moduleManager;
     __weak typeof(self) weakSelf = self;
-    [moduleManager afterModuleInit:^{
-        Module *md = [weakmoduleManager findModuleWithModuleName:name];
-        if (!md) {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                block(nil,[NSError errorWithDomain:@"NSERROR_MODULENOTFOUND_DOMAIN" code:-100 userInfo:@{NSLocalizedDescriptionKey:[NSString stringWithFormat:@"MODULE:%@ ; not found",name]}]);
-            });
+    dispatch_async(dispatch_get_global_queue(0, 0), ^{
+        [weakmoduleManager afterModuleInit:^{
+            Module *md = [weakmoduleManager findModuleWithModuleName:name];
+            if (!md) {
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    block(nil,[NSError errorWithDomain:@"NSERROR_MODULENOTFOUND_DOMAIN" code:-100 userInfo:@{NSLocalizedDescriptionKey:[NSString stringWithFormat:@"MODULE:%@ ; not found",name]}]);
+                });
             
-        }
-        [weakSelf rescurseDepend:md fileName:fileName complete:block];
-    }];
+            }
+            [weakSelf rescurseDepend:md fileName:fileName complete:block];
+        }];
+    });
 }
 
 -(void)rescurseDepend:(Module *)md fileName:(NSString *)fileName complete:(void (^)(NSData *source, NSError *error))block;
 {
     __weak typeof(self) weakSelf = self;
-     __weak typeof(moduleManager) weakModuleManager = moduleManager;
+    __weak typeof(moduleManager) weakModuleManager = moduleManager;
     NSMutableArray *arrary = [NSMutableArray new];
     [self rescurseDepend:md arr:arrary];
     __block BOOL ready = YES;
@@ -227,9 +232,8 @@
     }else
     {
         [netWorkManager addTasks:urls tag:@"max" moduleComplete:^(NSString *url, NSData *data, NSError *error) {
-            NSLog(@"%@",url);
+    
         } allcomplete:^{
-            //TODO : 解压的线程同步之后才走下面的logic
             ready = YES;
             for (Module *module in arrary) {
                 if (![weakModuleManager isModuleReady:module]) {
@@ -238,8 +242,8 @@
                 }
             }
             if (ready) {
-                NSData *tdata = [weakModuleManager findDataWithModuleName:md.moduleName fileName:fileName];
                 dispatch_async(dispatch_get_main_queue(), ^{
+                    NSData *tdata = [weakModuleManager findDataWithModuleName:md.moduleName fileName:fileName];
                     if (tdata) {
                         block(tdata,nil);
                     }else

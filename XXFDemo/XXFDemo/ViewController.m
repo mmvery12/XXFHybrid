@@ -21,6 +21,7 @@
     [self.view addSubview:webview];
     [webview loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:@"http://www.baidu.com"]]];
     webview.delegate = self;
+    [self xxxx];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -29,7 +30,7 @@
 
 -(void)xxxx
 {
-    [HyBridManager UseResourceWithModuleName:@"moduleA" fileName:@"xxxxx.a" complete:^(NSData *source, NSError *error) {
+    [HyBridManager UseResourceWithModuleName:@"moduleA" fileName:@"TencentOpenAPI" complete:^(NSData *source, NSError *error) {
         
     }];
 }

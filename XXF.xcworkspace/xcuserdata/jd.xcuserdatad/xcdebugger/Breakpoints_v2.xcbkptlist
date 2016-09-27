@@ -6,16 +6,32 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Hybrid/Hybrid/Module/ModuleManager.m"
+            timestampString = "496662744.357073"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "238"
+            endingLineNumber = "238"
+            landmarkName = "-afterModuleInit:"
+            landmarkType = "5">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "Hybrid/Hybrid/Manager/HyBridManager.m"
-            timestampString = "496577000.263965"
+            filePath = "XXFDemo/XXFDemo/ViewController.m"
+            timestampString = "496660219.173545"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "132"
-            endingLineNumber = "132"
-            landmarkName = "-analyzeRemoteConfig:"
+            startingLineNumber = "34"
+            endingLineNumber = "34"
+            landmarkName = "-xxxx"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>

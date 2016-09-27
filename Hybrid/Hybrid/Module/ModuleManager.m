@@ -8,15 +8,17 @@
 
 #import "ModuleManager.h"
 #import "Module.h"
+#import "Zip.h"
 static NSString *const TFolderPath = @"TFolderPath";
 @interface ModuleManager ()
 {
     NSMutableArray *modules;
     NSFileManager *fileManager;
-    CFRunLoopRef cfRunloop;
     NSSet *needArchiveType;
 }
 @property (atomic,assign)BOOL refreshFlag;
+@property (atomic,strong)NSMutableArray *modulesInProcess;
+@property (atomic,strong)NSMutableDictionary *threadrunloops;
 @end
 
 @implementation ModuleManager
@@ -28,6 +30,8 @@ static NSString *const TFolderPath = @"TFolderPath";
         modules = [NSMutableArray new];
         fileManager = [NSFileManager defaultManager];
         needArchiveType = [NSSet setWithObjects:@"zip",@"rar", nil];
+        self.modulesInProcess = [NSMutableArray new];
+        self.threadrunloops = [NSMutableDictionary new];
     }
     return self;
 }
@@ -47,11 +51,13 @@ static NSString *const TFolderPath = @"TFolderPath";
 -(NSArray <Module *> *)analyzeModules:(NSArray <Module *> *)modules_;
 {
     NSMutableArray *needUpdate = [NSMutableArray new];
+    NSThread *thread;
+    thread = self.threadrunloops[@"afterModuleInit"][@"thread"];
     @synchronized (modules) {
         if (modules_.count==0 && modules.count==0) {
             _refreshFlag = YES;
-            if (cfRunloop){
-                CFRunLoopStop(cfRunloop);
+            if (thread){
+                [self performSelector:@selector(changeloop:) onThread:thread withObject:self.threadrunloops[@"afterModuleInit"] waitUntilDone:YES];
             }
         }else
         {
@@ -81,11 +87,15 @@ static NSString *const TFolderPath = @"TFolderPath";
                 [[NSUserDefaults standardUserDefaults] synchronize];
             }
             _refreshFlag = YES;
-            if (cfRunloop){
-                CFRunLoopStop(cfRunloop);
+            if (thread){
+                [self performSelector:@selector(changeloop:) onThread:thread withObject:self.threadrunloops[@"afterModuleInit"] waitUntilDone:YES];
             }
         }
     }
+    for (Module *md in needUpdate) {
+        NSLog(@"Module need download %@",md.remoteurl);
+    }
+    
     return needUpdate;
     
 }
@@ -129,23 +139,53 @@ static NSString *const TFolderPath = @"TFolderPath";
 -(BOOL)storageModule:(Module *)module data:(NSData *)data;
 {
     if (!module) return NO;
-    NSString *path = [NSString stringWithFormat:@"%@/%@",[self cachePath],module.moduleName];
-    [self createpath:path];
+    [self.modulesInProcess addObject:module];
+    NSString *fileName = [[module.remoteurl componentsSeparatedByString:@"/"] lastObject];
+    NSString *floderpath = nil;
+    NSString *epath = [NSString stringWithFormat:@"%@/%@",[self cachePath],module.moduleName];
+    NSString *tpath = [NSString stringWithFormat:@"%@/%@",[self tcachePath],module.moduleName];
+    [self createpath:epath];
+    [self createpath:tpath];
     if ([needArchiveType containsObject:module.type]) {//解压
         module.status = ModuleStatusNeedArchize;
-        path = [NSString stringWithFormat:@"%@/%@",[self tcachePath],module.moduleName];
-        [self createpath:path];
-        
+        floderpath = tpath;
     }else
     {//直写
-        BOOL success = [data writeToFile:[NSString stringWithFormat:@"%@/%@.a",path,module.identify] atomically:YES];;
+        floderpath = epath;
+    }
+    NSString *filefullpath = [NSString stringWithFormat:@"%@/%@",floderpath,fileName];
+    BOOL success = [data writeToFile:filefullpath atomically:YES];
+//    [NSThread sleepForTimeInterval:10];
+    if ([needArchiveType containsObject:module.type]) {
+        NSError *error;
+        NSString *zipArchivePath = [NSString stringWithFormat:@"%@/%@",floderpath,module.moduleName];
+        [self createpath:zipArchivePath];
+        [Zip unzipFileAtPath:filefullpath toDestination:zipArchivePath overwrite:YES password:nil error:&error];
+        if (error) {//
+            module.status = ModuleStatusNone;
+            success = NO;
+        }else
+        {
+            if ([fileManager fileExistsAtPath:epath]) {
+                [fileManager removeItemAtPath:epath error:&error];
+            }
+            success = [fileManager moveItemAtPath:zipArchivePath toPath:epath error:&error];
+            [fileManager removeItemAtPath:filefullpath error:&error];
+            module.status = success?ModuleStatusReady:ModuleStatusNone;
+        }
+    }else
+    {
         if (success) {
             module.status = ModuleStatusReady;
         }else
             module.status = ModuleStatusNone;
-        return success;
     }
-    return NO;
+    [self.modulesInProcess removeObject:module];
+    NSThread *thread = self.threadrunloops[module.moduleName][@"thread"];
+    if (thread){
+        [self performSelector:@selector(changeloop:) onThread:thread withObject:self.threadrunloops[module.moduleName] waitUntilDone:YES];
+    }
+    return success;
 }
 
 -(void)deleteModule:(Module *)module_
@@ -171,7 +211,9 @@ static NSString *const TFolderPath = @"TFolderPath";
 
 -(void)createpath:(NSString *)path
 {
-    [fileManager createDirectoryAtPath:path withIntermediateDirectories:YES attributes:nil error:nil];
+    if (![fileManager fileExistsAtPath:path]) {
+        [fileManager createDirectoryAtPath:path withIntermediateDirectories:YES attributes:nil error:nil];
+    }
 }
 
 -(NSString *)cachePath
@@ -190,21 +232,69 @@ static NSString *const TFolderPath = @"TFolderPath";
 
 -(BOOL)isModuleReady:(Module *)module;
 {
-    NSString *path = [NSString stringWithFormat:@"%@/%@",[self cachePath],module.moduleName];
-    return [fileManager fileExistsAtPath:path];
+    [self modulesInProcess:module];
+    return module.status;
 }
 
 -(void)afterModuleInit:(dispatch_block_t)block;
 {
-    cfRunloop = CFRunLoopGetCurrent();
-    CFRunLoopSourceContext context = {0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL};
+    CFRunLoopRef cfRunloop = CFRunLoopGetCurrent();
+    CFRunLoopSourceContext context = {0, (__bridge void *)(self), NULL, NULL, NULL, NULL, NULL, NULL, NULL, &RunLoopSourcePerformRoutine};
     CFRunLoopSourceRef source = CFRunLoopSourceCreate(kCFAllocatorDefault, 0, &context);
     CFRunLoopAddSource(cfRunloop, source, kCFRunLoopDefaultMode);
     while (!_refreshFlag) {
+        [self.threadrunloops setObject:@{@"loop":(__bridge id)cfRunloop,@"src":(__bridge id)source,@"thread":[NSThread currentThread]} forKey:@"afterModuleInit"];
         CFRunLoopRun();
     }
     CFRunLoopRemoveSource(CFRunLoopGetCurrent(), source, kCFRunLoopDefaultMode);
     CFRelease(source);
-    block();
+    if (block) {
+        block();
+    }
+}
+
+void RunLoopSourcePerformRoutine (void *info)
+{
+    
+}
+
+
+-(BOOL)modulesInProcess:(Module *)module
+{
+    if (!module) return NO;
+
+    static dispatch_once_t onceToken;
+    CFRunLoopSourceContext context = {0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL};
+    CFRunLoopRef cfRunloop = CFRunLoopGetCurrent();
+    CFRunLoopSourceRef source = CFRunLoopSourceCreate(kCFAllocatorDefault, 0, &context);
+    CFRunLoopAddSource(cfRunloop, source, kCFRunLoopDefaultMode);
+    while (1) {
+        BOOL inp = NO;
+        for (Module *md in self.modulesInProcess) {
+            if ([md.remoteurl isEqualToString:module.remoteurl] && [md.moduleName isEqualToString:module.moduleName]) {
+                inp = YES;
+                break;
+            }
+        }
+        if (inp) {
+            [self.threadrunloops setObject:@{@"loop":(__bridge id)cfRunloop,@"src":(__bridge id)source,@"thread":[NSThread currentThread]} forKey:module.moduleName];
+            CFRunLoopRun();
+        }else
+        {
+            break;
+        }
+    }
+    CFRunLoopRemoveSource(cfRunloop, source, kCFRunLoopDefaultMode);
+    CFRelease(source);
+    return NO;
+}
+
+-(void)changeloop:(NSDictionary *)threadrunloops
+{
+    if (!threadrunloops) return;
+    CFRunLoopRef loop = (__bridge CFRunLoopRef)(threadrunloops[@"loop"]);
+//    CFRunLoopSourceSignal(src);
+//    CFRunLoopWakeUp(loop);
+    if (loop) CFRunLoopStop(loop);
 }
 @end

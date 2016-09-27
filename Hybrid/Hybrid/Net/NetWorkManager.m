@@ -65,12 +65,13 @@
 
 -(void)download:(NSString *)url params:(NSData *)data count:(NSInteger)count;
 {
+    NSLog(@"one url begin download %@",url);
     //尝试3次，3次后返回下载错误
     if (count==3) {
+        for (void (^block)(NSData *data,NSError *error) in [operDict objectForKey:url][@"blocks"]) {
+            block(nil,[NSError errorWithDomain:@"error" code:-100 userInfo:@{NSLocalizedDescriptionKey:@"net error"}]);
+        }
         @synchronized (operDict) {
-            for (void (^block)(NSData *data,NSError *error) in [operDict objectForKey:url][@"blocks"]) {
-                block(nil,[NSError errorWithDomain:@"error" code:-100 userInfo:@{NSLocalizedDescriptionKey:@"net error"}]);
-            }
             [operDict removeObjectForKey:url];
         }
         return;
@@ -82,47 +83,53 @@
     request.HTTPMethod = @"POST";
     NSURLResponse *response;
     NSError *error;
-    NSLog(@">>>>>>>Begin receive data %@",url);
     NSData *receivedata = [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:&error];
-    NSLog(@"<<<<<<<End receive data %@",url);
     if (receivedata && !error) {
+        NSLog(@"one url end download %@",url);
+        for (void (^block)(NSData *data,NSError *error) in [operDict objectForKey:url][@"blocks"]) {
+            block(receivedata,nil);
+        }
         @synchronized (operDict) {
-            for (void (^block)(NSData *data,NSError *error) in [operDict objectForKey:url][@"blocks"]) {
-                block(receivedata,nil);
-            }
             [operDict removeObjectForKey:url];
         }
     }else
     {
+        NSLog(@"one url faild download %@",url);
         [self download:url params:data count:++count];
     }
 }
 
 -(void)addTasks:(NSArray <NSString *> *)urlStrs tag:(NSString *)tag moduleComplete:(void (^)(NSString *url,NSData *data,NSError *error))oneblock allcomplete:(void (^)(void))block;
 {
+    NSLog(@"all tasks begin download %@",urlStrs);
     if (![urlStrs isKindOfClass:[NSArray class]] ||
         urlStrs.count==0) {
+        NSLog(@"all tasks is nil  %@",urlStrs);
         if (block) block();
     }
+    NSMutableArray *temp = [NSMutableArray new];
+    for (NSString *url in urlStrs) {
+        [temp addObject:url];
+    }
     @synchronized (tasksCheckTag) {
-        NSMutableArray *temp = [NSMutableArray new];
-        for (NSString *url in urlStrs) {
-            [temp addObject:url];
-        }
         [tasksCheckTag setObject:temp forKey:tag];
-        __weak typeof(self) weakSelf = self;
-        __weak typeof(tasksCheckTag) weaktasksCheckTag = tasksCheckTag;
-        for (NSString *url in temp) {
-            [self addTask:url complete:^(NSData *data, NSError *error) {
-                if (oneblock) oneblock(url,data,error);
-                @synchronized (weaktasksCheckTag) {
-                    [[weaktasksCheckTag objectForKey:tag] removeObject:url];
-                }
+    }
+    __weak typeof(self) weakSelf = self;
+    __weak typeof(tasksCheckTag) weaktasksCheckTag = tasksCheckTag;
+    for (NSString *url in temp) {
+        [self addTask:url complete:^(NSData *data, NSError *error) {
+            if (oneblock)
+                oneblock(url,data,error);
+            @synchronized (weaktasksCheckTag) {
+                [[weaktasksCheckTag objectForKey:tag] removeObject:url];
+            }
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
                 if ([weakSelf isAllTaskFinishWithTag:tag] && block) {
+                    NSLog(@"all tasks end download %@",urlStrs);
                     block();
                 }
-            }];
-        }
+            });
+        }];
     }
 }
 

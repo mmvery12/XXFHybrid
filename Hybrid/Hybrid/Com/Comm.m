@@ -16,7 +16,6 @@
 @implementation Comm
 +(BOOL)resolveInstanceMethod:(SEL)sel
 {
-    NSLog(@"service:%@ not found",NSStringFromSelector(sel));
     @selector(comNavigationHidden:p2:p3:p4:);
     return YES;
 }

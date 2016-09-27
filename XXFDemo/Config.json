@@ -3,9 +3,9 @@
                 {
                 "identify": "xxxxx",
                 "moduleName": "moduleA",
-                "remoteurl": "",
+                "remoteurl": "http://7nj1i4.com1.z0.glb.clouddn.com/TencentOpenAPI.zip",
                 "version": "1.0.0",
-                "type" : "jpeg",
+                "type" : "zip",
                 "depend": [
                            "moduleC",
                            "moduleB"

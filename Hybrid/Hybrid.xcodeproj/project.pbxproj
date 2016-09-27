@@ -23,6 +23,7 @@
 		69917A071D92278D00DD0A05 /* Zip.h in Headers */ = {isa = PBXBuildFile; fileRef = 69917A001D92278D00DD0A05 /* Zip.h */; };
 		69917A081D92278D00DD0A05 /* Zip.m in Sources */ = {isa = PBXBuildFile; fileRef = 69917A011D92278D00DD0A05 /* Zip.m */; };
 		69AA55A91D990E1400B917EC /* CommFormatConfig.h in Headers */ = {isa = PBXBuildFile; fileRef = 69AA55A81D990E1400B917EC /* CommFormatConfig.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		69AA55AE1D9A02A200B917EC /* ZipArchive.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 69AA55AD1D9A02A200B917EC /* ZipArchive.framework */; };
 		69DBBA951D979BFD006711B9 /* WhiteHouseURLProtocol.h in Headers */ = {isa = PBXBuildFile; fileRef = 69DBBA931D979BFD006711B9 /* WhiteHouseURLProtocol.h */; };
 		69DBBA961D979BFD006711B9 /* WhiteHouseURLProtocol.m in Sources */ = {isa = PBXBuildFile; fileRef = 69DBBA941D979BFD006711B9 /* WhiteHouseURLProtocol.m */; };
 		69F2E7B21D90EC5D00603610 /* Hybrid.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 69F2E7A71D90EC5D00603610 /* Hybrid.framework */; };
@@ -56,6 +57,7 @@
 		69917A001D92278D00DD0A05 /* Zip.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Zip.h; sourceTree = "<group>"; };
 		69917A011D92278D00DD0A05 /* Zip.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Zip.m; sourceTree = "<group>"; };
 		69AA55A81D990E1400B917EC /* CommFormatConfig.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CommFormatConfig.h; sourceTree = "<group>"; };
+		69AA55AD1D9A02A200B917EC /* ZipArchive.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ZipArchive.framework; path = "../SSZipArchive/build/Debug-iphoneos/ZipArchive.framework"; sourceTree = "<group>"; };
 		69DBBA931D979BFD006711B9 /* WhiteHouseURLProtocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WhiteHouseURLProtocol.h; sourceTree = "<group>"; };
 		69DBBA941D979BFD006711B9 /* WhiteHouseURLProtocol.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WhiteHouseURLProtocol.m; sourceTree = "<group>"; };
 		69F2E7A71D90EC5D00603610 /* Hybrid.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Hybrid.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -69,6 +71,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				69AA55AE1D9A02A200B917EC /* ZipArchive.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -146,6 +149,7 @@
 		69F2E79D1D90EC5D00603610 = {
 			isa = PBXGroup;
 			children = (
+				69AA55AD1D9A02A200B917EC /* ZipArchive.framework */,
 				69F2E7A91D90EC5D00603610 /* Hybrid */,
 				69F2E7B51D90EC5D00603610 /* HybridTests */,
 				69F2E7A81D90EC5D00603610 /* Products */,

@@ -14,10 +14,9 @@
  *************************/
 
 typedef NS_ENUM(NSInteger,ModuleStatus) {
-    ModuleStatusNone,
-    ModuleStatusNeedArchize,
-    ModuleStatusArchizeing,
-    ModuleStatusReady
+    ModuleStatusNone = 0,//需下载
+    ModuleStatusNeedArchize,//需解压
+    ModuleStatusReady//可以使用
 };
 @interface Module : NSObject<ModuleSelect,NSCoding >
 @property (nonatomic,copy)NSString *identify;
