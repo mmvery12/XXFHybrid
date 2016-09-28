@@ -18,6 +18,12 @@ typedef NS_ENUM(NSInteger,ModuleStatus) {
     ModuleStatusNeedArchize,//需解压
     ModuleStatusReady//可以使用
 };
+typedef NS_ENUM(NSInteger,ModuleWorkFlow)
+{
+    ModuleWorkFlowInNone,
+    ModuleWorkFlowInNet,
+    ModuleWorkFlowInArchive
+};
 @interface Module : NSObject<ModuleSelect,NSCoding >
 @property (nonatomic,copy)NSString *identify;
 @property (nonatomic,copy)NSString *moduleName;

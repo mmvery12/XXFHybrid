@@ -35,7 +35,7 @@
 
 -(void)addTask:(NSString *)urlStr params:(id)params complete:(void (^)(NSData *data,NSError *error))block;
 {
-    @synchronized (operDict) {
+    @synchronized (self) {
         NSMutableDictionary *tempdict = [operDict objectForKey:urlStr];
         NSMutableArray *temparr = nil;
         if (tempdict) {
@@ -68,15 +68,15 @@
     NSLog(@"one url begin download %@",url);
     //尝试3次，3次后返回下载错误
     if (count==3) {
-        for (void (^block)(NSData *data,NSError *error) in [operDict objectForKey:url][@"blocks"]) {
-            block(nil,[NSError errorWithDomain:@"error" code:-100 userInfo:@{NSLocalizedDescriptionKey:@"net error"}]);
-        }
-        @synchronized (operDict) {
+        @synchronized (self) {
+            for (void (^block)(NSData *data,NSError *error) in [operDict objectForKey:url][@"blocks"]) {
+                block(nil,[NSError errorWithDomain:@"error" code:-100 userInfo:@{NSLocalizedDescriptionKey:@"net error"}]);
+            }
             [operDict removeObjectForKey:url];
         }
         return;
     }
-    NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:[NSURL URLWithString:url] cachePolicy:NSURLRequestReloadIgnoringCacheData timeoutInterval:30];
+    NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:[NSURL URLWithString:url] cachePolicy:NSURLRequestReloadIgnoringCacheData timeoutInterval:5];
     if (data) {
         request.HTTPBody = data;
     }
@@ -85,26 +85,10 @@
     NSError *error;
     NSData *receivedata = [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:&error];
     if (receivedata && !error) {
-        NSLog(@"one url end download %@",url);
-        for (void (^block)(NSData *data,NSError *error) in [operDict objectForKey:url][@"blocks"]) {
-            /********
-             ＊＊＊＊＊＊＊＊此方法中会执行判断tasks的allcomplete的block回调，回调完成后才执行下一个url关联的block
-             如果单独的文件depence tasks请求先于hybridmanager的analyse之后的tasks请求，可能会有问题，因为在这个block中analyse的oneblock会执行解压方法
-             if (oneblock)
-             oneblock(url,data,error);
-             @synchronized (weaktasksCheckTag) {
-             [[weaktasksCheckTag objectForKey:tag] removeObject:url];
-             }
-             dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-             if ([weakSelf isAllTaskFinishWithTag:tag] && block) {
-             NSLog(@"all tasks end download %@",urlStrs);
-             block();
-             }
-             });
-             ********/
-            block(receivedata,nil);
-        }
-        @synchronized (operDict) {
+        @synchronized (self) {
+            for (void (^block)(NSData *data,NSError *error) in [operDict objectForKey:url][@"blocks"]) {
+                block(receivedata,nil);
+            }
             [operDict removeObjectForKey:url];
         }
     }else

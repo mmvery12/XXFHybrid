@@ -109,7 +109,7 @@
             data = [NSData dataWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"Config" ofType:@"json"]];
             [weakSelf analyzeRemoteConfig:[NSJSONSerialization JSONObjectWithData:data options:0 error:nil]];
         }else
-        {//-(NSArray <Module *> *)analyzeModules:(NSArray <Module *> *)modules_;这个方法中添加的runloop的source监听，需要在网络请求后响应监听的回调，所以
+        {
             [weakSelf analyzeRemoteConfig:nil];
         }
     }];
@@ -119,22 +119,23 @@
 -(void)analyzeRemoteConfig:(NSDictionary *)remoteConfigDict
 {
     __weak typeof(moduleManager) weakModuleManager = moduleManager;
-    //不上传本地资源由native自行判断,服务器下发统一的最新资源配置
-    NSArray <Module *>*modules = [moduleManager analyzeModules:[self modulesFromeDictionary:remoteConfigDict]];
-//    计算各个模块权重
-//    modules =  [self sotrDownSequence:modules];
-    NSMutableArray *temp = [NSMutableArray array];
-    for (Module *module in modules) {
-        [temp addObject:module.remoteurl];
-    }
-    [netWorkManager addTasks:temp tag:@"mainDownLoad" moduleComplete:^(NSString *url,NSData *data, NSError *error) {
-        if (!error) {
-            Module *module = [weakModuleManager findModuleWithRemoteUrl:url];
-            NSLog(@"storageModule %@ %@",module.type,module.remoteurl);
-            [weakModuleManager storageModule:module data:data];
+    __weak typeof(netWorkManager) weakNetManager = netWorkManager;
+    //版本分析策略不上传本地资源由native自行判断,服务器下发统一的最新资源配置
+    [moduleManager analyzeModules:[weakModuleManager modulesFromeDictionary:remoteConfigDict] result:^(NSArray<Module *> *modules) {
+        //    modules =  [self sortModulesSequence:modules];//    计算各个模块权重
+        NSMutableArray *temp = [NSMutableArray array];
+        for (Module *module in modules) {
+            [temp addObject:module.remoteurl];
         }
-    } allcomplete:^{
-        NSLog(@"all allcomplete %@",[NSDate date]);
+        [weakNetManager addTasks:temp tag:@"mainDownLoad" moduleComplete:^(NSString *url,NSData *data, NSError *error) {
+            if (!error) {
+                Module *module = [weakModuleManager findModuleWithRemoteUrl:url];
+                NSLog(@"storageModule %@ %@",module.type,module.remoteurl);
+                [weakModuleManager storageModule:module data:data];
+            }
+        } allcomplete:^{
+            NSLog(@"all allcomplete %@",[NSDate date]);
+        }];
     }];
 }
 
@@ -203,7 +204,6 @@
                 dispatch_async(dispatch_get_main_queue(), ^{
                     block(nil,[NSError errorWithDomain:@"NSERROR_MODULENOTFOUND_DOMAIN" code:-100 userInfo:@{NSLocalizedDescriptionKey:[NSString stringWithFormat:@"MODULE:%@ ; not found",name]}]);
                 });
-            
             }
             [weakSelf rescurseDepend:md fileName:fileName complete:block];
         }];
@@ -216,6 +216,9 @@
     __weak typeof(moduleManager) weakModuleManager = moduleManager;
     NSMutableArray *arrary = [NSMutableArray new];
     [self rescurseDepend:md arr:arrary];
+    //1.当在下载中时hook
+    //2.当在解压时hook
+    //3.当没有
     __block BOOL ready = YES;
     NSMutableArray *urls = [NSMutableArray new];
     for (Module *module in arrary) {
@@ -231,7 +234,7 @@
     }else
     {
         [netWorkManager addTasks:urls tag:@"max" moduleComplete:^(NSString *url, NSData *data, NSError *error) {
-    
+            
         } allcomplete:^{
             ready = YES;
             for (Module *module in arrary) {
@@ -270,26 +273,8 @@
     }
 }
 
--(NSArray <Module *>*)modulesFromeDictionary:(NSDictionary *)dict
-{
-    if (!dict) {
-        return nil;
-    }
-    NSMutableArray *arr = [NSMutableArray new];
-    for (NSDictionary *tdict in dict[@"modules"]) {
-        Module *module = [Module new];
-        module.identify = tdict[@"identify"];
-        module.moduleName = tdict[@"moduleName"];
-        module.remoteurl = tdict[@"remoteurl"];
-        module.version = tdict[@"version"];
-        module.type = tdict[@"type"];
-        module.depend = tdict[@"depend"];
-        [arr addObject:module];
-    }
-    return arr;
-}
 
--(NSArray *)sotrDownSequence:(NSArray *)modules
+-(NSArray *)sortModulesSequence:(NSArray *)modules
 {//计算各个模块权重
     
     NSMutableArray *tempArr = [NSMutableArray new];
@@ -312,7 +297,6 @@
             }
         }
     }
-    
     tempArr = [NSMutableArray arrayWithArray:[tempArr sortedArrayUsingComparator:^NSComparisonResult(id  _Nonnull obj1, id  _Nonnull obj2) {
         NSDictionary *dict1 = obj1;
         NSDictionary *dict2 = obj2;
@@ -332,5 +316,15 @@
         [tempArr replaceObjectAtIndex:i withObject:[temp objectForKey:[temp allKeys][0]]];
     }
     return tempArr;
+}
+
+-(void)hookWithModules:(NSArray <Module *> *)modules_ result:(void (^)(void))resultblock
+{
+    
+}
+
+-(NSArray *)getModules
+{
+    return moduleManager.useModules;
 }
 @end
