@@ -218,7 +218,6 @@ static NSString *const TFolderPath = @"TFolderPath";
             [[NSUserDefaults standardUserDefaults] synchronize];
         }
         [self delModuleInProgress:module];
-        NSLog(@"storageModule error %@",error);
     }
     [self changeloop:threadrunloops[module.moduleName]];
     return success;

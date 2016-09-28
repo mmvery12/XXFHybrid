@@ -302,7 +302,6 @@
                     success = NO;
                     break;
                 }
-                NSLog(@"[SSZipArchive] Error: %@", err.localizedDescription);
             }
             
             if ([fileManager fileExistsAtPath:fullPath] && !isDirectory && !overwrite) {
@@ -326,7 +325,6 @@
                 
                 if (fp) {
                     if ([[[fullPath pathExtension] lowercaseString] isEqualToString:@"zip"]) {
-                        NSLog(@"Unzipping nested .zip file:  %@", [fullPath lastPathComponent]);
                         if ([self unzipFileAtPath:fullPath toDestination:[fullPath stringByDeletingLastPathComponent] overwrite:overwrite password:password error:nil delegate:nil ]) {
                             [[NSFileManager defaultManager] removeItemAtPath:fullPath error:nil];
                         }
@@ -344,7 +342,6 @@
                             if (attr) {
                                 if ([fileManager setAttributes:attr ofItemAtPath:fullPath error:nil] == NO) {
                                     // Can't set attributes
-                                    NSLog(@"[SSZipArchive] Failed to set attributes - whilst setting modification date");
                                 }
                             }
                         }
@@ -364,7 +361,6 @@
                             // Update attributes
                             if ([fileManager setAttributes:attrs ofItemAtPath:fullPath error:nil] == NO) {
                                 // Unable to set the permissions attribute
-                                NSLog(@"[SSZipArchive] Failed to set attributes - whilst setting permissions");
                             }
 
 #if !__has_feature(objc_arc)
@@ -404,7 +400,6 @@
                 
                 if(symlinkError != 0)
                 {
-                    NSLog(@"Failed to create symbolic link at \"%@\" to \"%@\". symlink() error code: %d", fullPath, destinationPath, errno);
                 }
             }
             
@@ -443,10 +438,8 @@
         NSError * err = nil;
         for (NSDictionary * d in directoriesModificationDates) {
             if (![[NSFileManager defaultManager] setAttributes:@{NSFileModificationDate: d[@"modDate"]} ofItemAtPath:d[@"path"] error:&err]) {
-                NSLog(@"[SSZipArchive] Set attributes failed for directory: %@.", d[@"path"]);
             }
             if (err) {
-                NSLog(@"[SSZipArchive] Error setting directory file modification date attribute: %@",err.localizedDescription);
             }
         }
 #if !__has_feature(objc_arc)

@@ -68,7 +68,6 @@
 
 -(void)download:(NSString *)url params:(NSData *)data count:(NSInteger)count;
 {
-    NSLog(@"one url begin download %@",url);
     //尝试3次，3次后返回下载错误
     if (count==3) {
         NSArray *tempArr = [NSArray arrayWithArray:[operDict objectForKey:url][@"blocks"]];
@@ -99,7 +98,6 @@
         
     }else
     {
-        NSLog(@"one url faild download %@",url);
         [self download:url params:data count:++count];
     }
 }
@@ -107,10 +105,8 @@
 -(void)addTasks:(NSArray <NSString *> *)urlStrs moduleComplete:(void (^)(NSString *url,NSData *data,NSError *error))oneblock allcomplete:(void (^)(void))block;
 {
     NSString *tag = [NSString stringWithFormat:@"%lld",[[NSDate date] timeIntervalSince1970]];
-    NSLog(@"all tasks begin download %@",urlStrs);
     if (![urlStrs isKindOfClass:[NSArray class]] ||
         urlStrs.count==0) {
-        NSLog(@"all tasks is nil  %@",urlStrs);
         if (block) block();
     }
     NSMutableArray *temp = [NSMutableArray new];
@@ -130,7 +126,6 @@
                 [[weaktasksCheckTag objectForKey:tag] removeObject:url];
             }
             if ([weakSelf isAllTaskFinishWithTag:tag] && block) {
-                NSLog(@"all tasks end download %@",urlStrs);
                 block();
             }
         }];

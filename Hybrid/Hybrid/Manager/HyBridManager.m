@@ -12,6 +12,11 @@
 #import <objc/message.h>
 #import <objc/runtime.h>
 #import "Module.h"
+
+static BOOL debugOn = NO;
+
+#define Log( s, ... ) !debugOn?:NSLog( @"%@", [NSString stringWithFormat:(s), ##__VA_ARGS__])
+
 @interface HyBridManager ()
 {
     ModuleManager *moduleManager;
@@ -23,24 +28,28 @@
 @end
 
 @implementation HyBridManager
+
 -(void)UIApplicationDidEnterBackgroundNotification
 {
+    Log(@"UIApplicationDidEnterBackgroundNotification timer end");
     [self timerEnd];
 }
 -(void)UIApplicationWillEnterForegroundNotification
 {
+    Log(@"UIApplicationWillEnterForegroundNotification timer begin");
     [self timerBegin];
 }
 
 -(void)UIApplicationDidFinishLaunchingNotification
 {
+    Log(@"UIApplicationDidFinishLaunchingNotification timer begin");
     [self timerBegin];
 }
 
 -(void)timerBegin
 {
     [self timerEnd];
-    timer = [NSTimer timerWithTimeInterval:10 target:self selector:@selector(start) userInfo:nil repeats:YES];
+    timer = [NSTimer timerWithTimeInterval:60*60 target:self selector:@selector(start) userInfo:nil repeats:YES];
     [[NSRunLoop currentRunLoop] addTimer:timer forMode:NSRunLoopCommonModes];
 }
 
@@ -50,11 +59,6 @@
         [timer invalidate];
         timer = nil;
     }
-}
-
-+(void)load
-{
-    
 }
 
 +(instancetype)Manager;
@@ -81,8 +85,9 @@
     return self;
 }
 
-+(void)Start;
++(void)StartWithLog:(BOOL)log;
 {
+    debugOn = log;
     [[HyBridManager Manager] start];
 }
 
@@ -103,9 +108,12 @@
 
 -(void)start
 {
+    NSLog(@"will start");
     if (![moduleManager isProgressRuning] && !isrefresh) {
+        NSLog(@"did start");
         [self remoteChecking];//远程下发服务
     }
+    NSLog(@"end start");
 }
 
 -(void)remoteChecking
@@ -139,7 +147,7 @@
     [moduleManager analyzeModules:[weakModuleManager modulesFromeDictionary:remoteConfigDict] result:^(NSArray<Module *> *modules) {
         //    modules =  [self sortModulesSequence:modules];//    计算各个模块权重
         [weakSelf hookWithModules:modules result:^{
-            NSLog(@"all allcomplete analyzeRemoteConfig");
+            Log(@"all allcomplete analyzeRemoteConfig");
         }];
     }];
 }
@@ -224,7 +232,7 @@
     [self hookWithModules:arrary result:^{
         dispatch_async(dispatch_get_main_queue(), ^{
             NSData *tdata = [weakModuleManager findDataWithModuleName:md.moduleName fileName:fileName];
-            NSLog(@"customer rescurseDepend off %d",tdata?1:0);
+            Log(@"customer rescurseDepend data status %d",tdata?1:0);
             if (tdata) {
                 block(tdata,nil);
             }else
@@ -299,7 +307,6 @@
  ************/
 -(void)hookWithModules:(NSArray <Module *> *)modules_ result:(void (^)(void))resultblock
 {
-    NSLog(@"hookWithModules");
     __weak typeof(moduleManager) weakModuleManager = moduleManager;
     __weak typeof(netWorkManager) weakNetManager = netWorkManager;
     NSMutableArray *array = [NSMutableArray new];
@@ -321,7 +328,7 @@
     }
     [netWorkManager addTasks:array moduleComplete:^(NSString *url, NSData *data, NSError *error) {
         Module *module = [weakModuleManager findModuleWithRemoteUrl:url];
-        NSLog(@"storageModule %@ %@",module.type,module.remoteurl);
+        Log(@"storageModule %@ %@",module.type,module.remoteurl);
         [weakModuleManager storageModule:module data:data];
     } allcomplete:resultblock];
 }
