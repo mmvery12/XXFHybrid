@@ -17,6 +17,8 @@
     ModuleManager *moduleManager;
     NetWorkManager *netWorkManager;
     NSTimer *timer;
+    
+    BOOL isrefresh;
 }
 @end
 
@@ -101,9 +103,7 @@
 
 -(void)start
 {
-    NSLog(@"will start");
-    if (![moduleManager isProgressRuning]) {
-        NSLog(@"did start");
+    if (![moduleManager isProgressRuning] && !isrefresh) {
         [self remoteChecking];//远程下发服务
     }
 }
@@ -111,6 +111,10 @@
 -(void)remoteChecking
 {
     __weak typeof(self) weakSelf = self;
+    __block wrRefresh = isrefresh;
+    @synchronized (self) {
+        wrRefresh = YES;
+    }
     [netWorkManager addTask:@"http://www.baidu.com" params:nil complete:^(NSData *data, NSError *error) {
         if (!error) {
             data = [NSData dataWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"Config" ofType:@"json"]];
@@ -118,6 +122,9 @@
         }else
         {
             [weakSelf analyzeRemoteConfig:nil];
+        }
+        @synchronized (self) {
+            wrRefresh = NO;
         }
     }];
 }

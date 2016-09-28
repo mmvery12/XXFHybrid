@@ -10,12 +10,6 @@
 
 @implementation Module
 
--(BOOL)allReady
-{
-
-    return YES;
-}
-
 - (void)encodeWithCoder:(NSCoder *)aCoder;
 {
     [aCoder encodeObject:self.identify forKey:@"identify"];

@@ -164,61 +164,62 @@ static NSString *const TFolderPath = @"TFolderPath";
 
 -(BOOL)storageModule:(Module *)module data:(NSData *)data;
 {
-    if (!module) return NO;
-    if (!data) {
-        module.status = ModuleStatusNone;
-        return NO;
-    }
-    NSString *fileName = [[module.remoteurl componentsSeparatedByString:@"/"] lastObject];
-    NSString *floderpath = nil;
-    NSString *epath = [NSString stringWithFormat:@"%@/%@",[self cachePath],module.moduleName];
-    NSString *tpath = [NSString stringWithFormat:@"%@/%@",[self tcachePath],module.moduleName];
-    [self createpath:epath];
-    [self createpath:tpath];
-    if ([needArchiveType containsObject:module.type]) {//解压
-        floderpath = tpath;
-    }else
-    {//直写
-        floderpath = epath;
-    }
-    NSError *error;
-    NSString *filefullpath = [NSString stringWithFormat:@"%@/%@",floderpath,fileName];
-    BOOL success = [data writeToFile:filefullpath atomically:YES];
-    module.status = ModuleStatusNeedArchize;
-    if ([needArchiveType containsObject:module.type]) {
-        NSString *zipArchivePath = [NSString stringWithFormat:@"%@/%@",floderpath,module.moduleName];
-        [self createpath:zipArchivePath];
-        [Zip unzipFileAtPath:filefullpath toDestination:zipArchivePath overwrite:YES password:nil error:&error];
-        if (error) {//
-            module.status = ModuleStatusNone;
-            success = NO;
-            [fileManager removeItemAtPath:filefullpath error:&error];
-        }else
-        {
-            if ([fileManager fileExistsAtPath:epath]) {
-                [fileManager removeItemAtPath:epath error:&error];
-            }
-            success = [fileManager moveItemAtPath:zipArchivePath toPath:epath error:&error];
-            [fileManager removeItemAtPath:filefullpath error:&error];
-            module.status = success?ModuleStatusReady:ModuleStatusNone;
-        }
+    BOOL success = NO;
+    if (!data || !module) {
+        if (module) module.status = ModuleStatusNone;
     }else
     {
-        if (success) {
-            module.status = ModuleStatusReady;
+        NSString *fileName = [[module.remoteurl componentsSeparatedByString:@"/"] lastObject];
+        NSString *floderpath = nil;
+        NSString *epath = [NSString stringWithFormat:@"%@/%@",[self cachePath],module.moduleName];
+        NSString *tpath = [NSString stringWithFormat:@"%@/%@",[self tcachePath],module.moduleName];
+        [self createpath:epath];
+        [self createpath:tpath];
+        if ([needArchiveType containsObject:module.type]) {//解压
+            floderpath = tpath;
         }else
-            module.status = ModuleStatusNone;
+        {//直写
+            floderpath = epath;
+        }
+        NSError *error;
+        NSString *filefullpath = [NSString stringWithFormat:@"%@/%@",floderpath,fileName];
+        BOOL success = [data writeToFile:filefullpath atomically:YES];
+        module.status = ModuleStatusNeedArchize;
+        if ([needArchiveType containsObject:module.type]) {
+            NSString *zipArchivePath = [NSString stringWithFormat:@"%@/%@",floderpath,module.moduleName];
+            [self createpath:zipArchivePath];
+            [Zip unzipFileAtPath:filefullpath toDestination:zipArchivePath overwrite:YES password:nil error:&error];
+            if (error) {//
+                module.status = ModuleStatusNone;
+                success = NO;
+                [fileManager removeItemAtPath:filefullpath error:&error];
+            }else
+            {
+                if ([fileManager fileExistsAtPath:epath]) {
+                    [fileManager removeItemAtPath:epath error:&error];
+                }
+                success = [fileManager moveItemAtPath:zipArchivePath toPath:epath error:&error];
+                [fileManager removeItemAtPath:filefullpath error:&error];
+                module.status = success?ModuleStatusReady:ModuleStatusNone;
+            }
+        }else
+        {
+            if (success) {
+                module.status = ModuleStatusReady;
+            }else
+                module.status = ModuleStatusNone;
+        }
+        
+        Module *tempMoule = [self findModuleWithModuleName:module.moduleName];
+        tempMoule.status = module.status;
+        @synchronized (self) {
+            NSData *archiveCarPriceData = [NSKeyedArchiver archivedDataWithRootObject:modules];
+            [[NSUserDefaults standardUserDefaults] setObject:archiveCarPriceData forKey:@"modules"];
+            [[NSUserDefaults standardUserDefaults] synchronize];
+        }
+        [self delModuleInProgress:module];
+        NSLog(@"storageModule error %@",error);
     }
-    
-    Module *tempMoule = [self findModuleWithModuleName:module.moduleName];
-    tempMoule.status = module.status;
-    @synchronized (self) {
-        NSData *archiveCarPriceData = [NSKeyedArchiver archivedDataWithRootObject:modules];
-        [[NSUserDefaults standardUserDefaults] setObject:archiveCarPriceData forKey:@"modules"];
-        [[NSUserDefaults standardUserDefaults] synchronize];
-    }
-    [self delModuleInProgress:module];
-    NSLog(@"storageModule error %@",error);
     [self changeloop:threadrunloops[module.moduleName]];
     return success;
 }

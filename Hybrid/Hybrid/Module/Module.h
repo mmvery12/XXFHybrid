@@ -7,7 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "ModuleSelect.h"
+
 
 /*************************
  module映射的数据元组
@@ -20,7 +20,7 @@ typedef NS_ENUM(NSInteger,ModuleStatus) {
     ModuleStatusReady//可以使用
 };
 
-@interface Module : NSObject<ModuleSelect,NSCoding >
+@interface Module : NSObject<NSCoding >
 @property (nonatomic,copy)NSString *identify;
 @property (nonatomic,copy)NSString *moduleName;
 @property (nonatomic,copy)NSString *remoteurl;

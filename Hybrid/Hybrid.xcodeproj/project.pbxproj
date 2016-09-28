@@ -17,7 +17,6 @@
 		699179EA1D91108700DD0A05 /* Comm.m in Sources */ = {isa = PBXBuildFile; fileRef = 699179E81D91108700DD0A05 /* Comm.m */; };
 		69917A021D92278D00DD0A05 /* ModuleManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 699179FB1D92278D00DD0A05 /* ModuleManager.h */; };
 		69917A031D92278D00DD0A05 /* ModuleManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 699179FC1D92278D00DD0A05 /* ModuleManager.m */; };
-		69917A041D92278D00DD0A05 /* ModuleSelect.h in Headers */ = {isa = PBXBuildFile; fileRef = 699179FD1D92278D00DD0A05 /* ModuleSelect.h */; };
 		69917A051D92278D00DD0A05 /* Module.h in Headers */ = {isa = PBXBuildFile; fileRef = 699179FE1D92278D00DD0A05 /* Module.h */; };
 		69917A061D92278D00DD0A05 /* Module.m in Sources */ = {isa = PBXBuildFile; fileRef = 699179FF1D92278D00DD0A05 /* Module.m */; };
 		69917A071D92278D00DD0A05 /* Zip.h in Headers */ = {isa = PBXBuildFile; fileRef = 69917A001D92278D00DD0A05 /* Zip.h */; };
@@ -51,7 +50,6 @@
 		699179E81D91108700DD0A05 /* Comm.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Comm.m; sourceTree = "<group>"; };
 		699179FB1D92278D00DD0A05 /* ModuleManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ModuleManager.h; sourceTree = "<group>"; };
 		699179FC1D92278D00DD0A05 /* ModuleManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ModuleManager.m; sourceTree = "<group>"; };
-		699179FD1D92278D00DD0A05 /* ModuleSelect.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ModuleSelect.h; sourceTree = "<group>"; };
 		699179FE1D92278D00DD0A05 /* Module.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Module.h; sourceTree = "<group>"; };
 		699179FF1D92278D00DD0A05 /* Module.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Module.m; sourceTree = "<group>"; };
 		69917A001D92278D00DD0A05 /* Zip.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Zip.h; sourceTree = "<group>"; };
@@ -128,7 +126,6 @@
 			children = (
 				699179FB1D92278D00DD0A05 /* ModuleManager.h */,
 				699179FC1D92278D00DD0A05 /* ModuleManager.m */,
-				699179FD1D92278D00DD0A05 /* ModuleSelect.h */,
 				699179FE1D92278D00DD0A05 /* Module.h */,
 				699179FF1D92278D00DD0A05 /* Module.m */,
 				69917A001D92278D00DD0A05 /* Zip.h */,
@@ -203,7 +200,6 @@
 				69917A051D92278D00DD0A05 /* Module.h in Headers */,
 				69917A071D92278D00DD0A05 /* Zip.h in Headers */,
 				699179E91D91108700DD0A05 /* Comm.h in Headers */,
-				69917A041D92278D00DD0A05 /* ModuleSelect.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
