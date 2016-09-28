@@ -30,8 +30,8 @@
 
 -(void)xxxx
 {
-    [HyBridManager UseResourceWithModuleName:@"moduleA" fileName:@"TencentOpenAPI" complete:^(NSData *source, NSError *error) {
-        [self yyyy];
+    [HyBridManager UseResourceWithModuleName:@"moduleF" fileName:@"TencentOpenAPI" complete:^(NSData *source, NSError *error) {
+        
     }];
 }
 

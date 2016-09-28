@@ -95,8 +95,7 @@
 
 -(void)start
 {
-    if ([netWorkManager isAllTaskFinishWithTag:@"mainDownLoad"]) {
-        [moduleManager selfAnalyze];//modules本地自检
+    if (![moduleManager isProgressRuning]) {
         [self remoteChecking];//远程下发服务
     }
 }
@@ -120,21 +119,12 @@
 {
     __weak typeof(moduleManager) weakModuleManager = moduleManager;
     __weak typeof(netWorkManager) weakNetManager = netWorkManager;
+    __weak typeof(self) weakSelf = self;
     //版本分析策略不上传本地资源由native自行判断,服务器下发统一的最新资源配置
     [moduleManager analyzeModules:[weakModuleManager modulesFromeDictionary:remoteConfigDict] result:^(NSArray<Module *> *modules) {
         //    modules =  [self sortModulesSequence:modules];//    计算各个模块权重
-        NSMutableArray *temp = [NSMutableArray array];
-        for (Module *module in modules) {
-            [temp addObject:module.remoteurl];
-        }
-        [weakNetManager addTasks:temp tag:@"mainDownLoad" moduleComplete:^(NSString *url,NSData *data, NSError *error) {
-            if (!error) {
-                Module *module = [weakModuleManager findModuleWithRemoteUrl:url];
-                NSLog(@"storageModule %@ %@",module.type,module.remoteurl);
-                [weakModuleManager storageModule:module data:data];
-            }
-        } allcomplete:^{
-            NSLog(@"all allcomplete %@",[NSDate date]);
+        [weakSelf hookWithModules:modules result:^{
+            NSLog(@"all allcomplete analyzeRemoteConfig");
         }];
     }];
 }
@@ -216,47 +206,16 @@
     __weak typeof(moduleManager) weakModuleManager = moduleManager;
     NSMutableArray *arrary = [NSMutableArray new];
     [self rescurseDepend:md arr:arrary];
-    //1.当在下载中时hook
-    //2.当在解压时hook
-    //3.当没有
-    __block BOOL ready = YES;
-    NSMutableArray *urls = [NSMutableArray new];
-    for (Module *module in arrary) {
-        if (![moduleManager isModuleReady:module]) {
-            [urls addObject:module.remoteurl];
-            ready = NO;
-        }
-    }
-    if (ready) {
+    [self hookWithModules:arrary result:^{
         dispatch_async(dispatch_get_main_queue(), ^{
-            block([moduleManager findDataWithModuleName:md.moduleName fileName:fileName],nil);
-        });
-    }else
-    {
-        [netWorkManager addTasks:urls tag:@"max" moduleComplete:^(NSString *url, NSData *data, NSError *error) {
-            
-        } allcomplete:^{
-            ready = YES;
-            for (Module *module in arrary) {
-                if (![weakModuleManager isModuleReady:module]) {
-                    ready = NO;
-                    break;
-                }
-            }
-            if (ready) {
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    NSData *tdata = [weakModuleManager findDataWithModuleName:md.moduleName fileName:fileName];
-                    if (tdata) {
-                        block(tdata,nil);
-                    }else
-                        block(nil,[NSError errorWithDomain:@"NSERROR_MODULENOTFOUND_DOMAIN" code:-100 userInfo:@{NSLocalizedDescriptionKey:[NSString stringWithFormat:@"MODULE:%@ FILE SOURCE:%@ ; not found",md.moduleName,fileName]}]);
-                });
+            NSData *tdata = [weakModuleManager findDataWithModuleName:md.moduleName fileName:fileName];
+            NSLog(@"customer rescurseDepend off %d",tdata?1:0);
+            if (tdata) {
+                block(tdata,nil);
             }else
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    block(nil,[NSError errorWithDomain:@"NSERROR_MODULENOTFOUND_DOMAIN" code:-100 userInfo:@{NSLocalizedDescriptionKey:[NSString stringWithFormat:@"MODULE:%@ FILE SOURCE:%@ ; not found",md.moduleName,fileName]}]);
-                });
-        }];
-    }
+                block(nil,[NSError errorWithDomain:@"NSERROR_MODULENOTFOUND_DOMAIN" code:-100 userInfo:@{NSLocalizedDescriptionKey:[NSString stringWithFormat:@"MODULE:%@ FILE SOURCE:%@ ; not found",md.moduleName,fileName]}]);
+        });
+    }];
 }
 
 -(void)rescurseDepend:(Module *)md arr:(NSMutableArray *)arr;
@@ -318,13 +277,36 @@
     return tempArr;
 }
 
+/************
+ 如果module需要开启在workflow中，则开启下载workflow下载，
+ module在 moduleManager isModuleReady：方法中会询问是否需要等待，等待的话就表示此module在workflow中
+ 网络请求即开启workflow，将moduel加入到相应的监视队列，写文件结束workflow结束，将module从监视队列移除，并通知moduleManager isModuleReady：方法，继续执行
+ ************/
 -(void)hookWithModules:(NSArray <Module *> *)modules_ result:(void (^)(void))resultblock
 {
-    
+    NSLog(@"hookWithModules");
+    __weak typeof(moduleManager) weakModuleManager = moduleManager;
+    __weak typeof(netWorkManager) weakNetManager = netWorkManager;
+    NSMutableArray *array = [NSMutableArray new];
+    for (Module *md in modules_) {
+        Module *tmd = nil;
+        tmd = [moduleManager findModuleWithModule:md];
+        if ([moduleManager isModuleReady:tmd]==ModuleStatusNone) {
+            if ([md.remoteurl isKindOfClass:[NSString class]] && md.remoteurl.length!=0) {
+                [moduleManager addModuleInProgress:tmd];
+                [array addObject:md.remoteurl];
+            }
+        }
+    }
+    if (array.count==0) {
+        resultblock();
+        return;
+    }
+    [netWorkManager addTasks:array moduleComplete:^(NSString *url, NSData *data, NSError *error) {
+        Module *module = [weakModuleManager findModuleWithRemoteUrl:url];
+        NSLog(@"storageModule %@ %@",module.type,module.remoteurl);
+        [weakModuleManager storageModule:module data:data];
+    } allcomplete:resultblock];
 }
 
--(NSArray *)getModules
-{
-    return moduleManager.useModules;
-}
 @end

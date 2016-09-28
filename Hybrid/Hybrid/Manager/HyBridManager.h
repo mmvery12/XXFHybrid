@@ -60,7 +60,6 @@
  
 ***********************/
 @interface HyBridManager : NSObject
-@property (nonatomic,readonly,getter=getModules)NSArray *modules;
 +(instancetype)Manager;
 +(void)Start;//开始使用
 //解析webview中传递来的url，具体格式详见CommFormatConfig.h

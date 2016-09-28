@@ -98,8 +98,9 @@
     }
 }
 
--(void)addTasks:(NSArray <NSString *> *)urlStrs tag:(NSString *)tag moduleComplete:(void (^)(NSString *url,NSData *data,NSError *error))oneblock allcomplete:(void (^)(void))block;
+-(void)addTasks:(NSArray <NSString *> *)urlStrs moduleComplete:(void (^)(NSString *url,NSData *data,NSError *error))oneblock allcomplete:(void (^)(void))block;
 {
+    NSString *tag = [NSString stringWithFormat:@"%lld",[[NSDate date] timeIntervalSince1970]];
     NSLog(@"all tasks begin download %@",urlStrs);
     if (![urlStrs isKindOfClass:[NSArray class]] ||
         urlStrs.count==0) {
@@ -122,12 +123,10 @@
             @synchronized (weaktasksCheckTag) {
                 [[weaktasksCheckTag objectForKey:tag] removeObject:url];
             }
-            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                if ([weakSelf isAllTaskFinishWithTag:tag] && block) {
-                    NSLog(@"all tasks end download %@",urlStrs);
-                    block();
-                }
-            });
+            if ([weakSelf isAllTaskFinishWithTag:tag] && block) {
+                NSLog(@"all tasks end download %@",urlStrs);
+                block();
+            }
         }];
     }
 }

@@ -14,38 +14,42 @@ static NSString *const TFolderPath = @"TFolderPath";
 {
     NSFileManager *fileManager;
     NSSet *needArchiveType;
+    NSMutableArray *modules;
+    NSMutableArray *modulesInProcess;
+    NSMutableDictionary *threadrunloops;
+    BOOL refreshFlag;
 }
-@property (atomic,assign)NSMutableArray *modules;
-@property (atomic,assign)BOOL refreshFlag;
-@property (atomic,strong)NSMutableArray *modulesInProcess;
-@property (atomic,strong)NSMutableDictionary *threadrunloops;
 @end
 
 @implementation ModuleManager
-@synthesize modules = modules;
 - (instancetype)init
 {
     self = [super init];
     if (self) {
-        self.modules = [NSMutableArray new];
+        modules = [NSMutableArray new];
         fileManager = [NSFileManager defaultManager];
         needArchiveType = [NSSet setWithObjects:@"zip",@"rar", nil];
-        self.modulesInProcess = [NSMutableArray new];
-        self.threadrunloops = [NSMutableDictionary new];
+        modulesInProcess = [NSMutableArray new];
+        threadrunloops = [NSMutableDictionary new];
+        [self selfAnalyze];
     }
     return self;
 }
 
 -(void)selfAnalyze;
 {
-    @synchronized (self.modules) {
-        NSData *myEncodedObject = [[NSUserDefaults standardUserDefaults] objectForKey:@"modules"];
-        self.modules = [NSKeyedUnarchiver unarchiveObjectWithData: myEncodedObject];
-        if (!self.modules) {
-            self.modules = [NSMutableArray new];
-        }
-        [self deleteContentsWithOutModules:self.modules];//配置文件中没有的统统删掉
+    NSData *myEncodedObject = [[NSUserDefaults standardUserDefaults] objectForKey:@"modules"];
+    NSMutableArray *temp = [NSKeyedUnarchiver unarchiveObjectWithData: myEncodedObject];
+    if ([temp isKindOfClass:[NSArray class]]) {
+        modules = [NSMutableArray arrayWithArray:temp];
     }
+     
+    for (Module *md in modules) {
+        if (md.status == ModuleStatusDowning) {
+            md.status = ModuleStatusNone;
+        }
+    }
+    [self deleteContentsWithOutModules:modules];//配置文件中没有的统统删掉
 }
 
 -(NSArray <Module *>*)modulesFromeDictionary:(NSDictionary *)dict
@@ -67,22 +71,14 @@ static NSString *const TFolderPath = @"TFolderPath";
     return arr;
 }
 
--(NSArray *)getUseModules
-{
-    return self.modules;
-}
 
 -(void)analyzeModules:(NSArray <Module *> *)modules_ result:(void (^)(NSArray <Module *> *))resultblock;
 {
-    self.refreshFlag = NO;
+     
+    refreshFlag = NO;
     NSMutableArray *needUpdate = [NSMutableArray new];
-    NSThread *thread;
-    thread = self.threadrunloops[@"afterModuleInit"][@"thread"];
-    @synchronized (self.modules) {
-        if (!modules_ || modules_.count==0) {
-            
-        }else
-        {
+    @synchronized (self) {
+        if ([modules_ isKindOfClass:[NSArray class]] && modules_.count!=0) {
             NSMutableArray *normal = [NSMutableArray new];
             {
                 for (Module *md in modules_) {
@@ -95,32 +91,47 @@ static NSString *const TFolderPath = @"TFolderPath";
                         [needUpdate addObject:md];
                 }
             }
-            [self.modules removeObjectsInArray:normal];
-            [self.modules removeObjectsInArray:needUpdate];
-            for (Module *md in self.modules) {
+            [modules removeObjectsInArray:normal];
+            [modules removeObjectsInArray:needUpdate];
+            for (Module *md in modules) {
                 [self deleteModule:md];
             }
-            [self.modules removeAllObjects];
-            [self.modules addObjectsFromArray:normal];
-            [self.modules addObjectsFromArray:needUpdate];
+            [modules removeAllObjects];
+            [modules addObjectsFromArray:normal];
+            [modules addObjectsFromArray:needUpdate];
             {
                 NSData *archiveCarPriceData = [NSKeyedArchiver archivedDataWithRootObject:modules];
                 [[NSUserDefaults standardUserDefaults] setObject:archiveCarPriceData forKey:@"modules"];
                 [[NSUserDefaults standardUserDefaults] synchronize];
             }
-            
         }
+    
+        for (Module *md in needUpdate) {
+            md.status = ModuleStatusNone;
+        }
+        
     }
+    NSThread *thread;
+    thread = threadrunloops[@"afterModuleInit"][@"thread"];
     resultblock(needUpdate);
-    self.refreshFlag = YES;
+    refreshFlag = YES;
     if (thread){
-        [self performSelector:@selector(changeloop:) onThread:thread withObject:self.threadrunloops[@"afterModuleInit"] waitUntilDone:YES];
+        [self performSelector:@selector(changeloop:) onThread:thread withObject:threadrunloops[@"afterModuleInit"] waitUntilDone:YES];
     }
 }
-
+-(Module *)findModuleWithModule:(Module *)module;
+{
+    for (Module *md in modules) {
+        if ([md.moduleName isEqualToString:module.moduleName] && [md.remoteurl isEqualToString:module.remoteurl]) {
+            return md;
+        }
+    }
+    return nil;
+}
 -(Module *)findModuleWithModuleName:(NSString *)moduleName
 {
-    for (Module *md in self.modules) {
+     
+    for (Module *md in modules) {
         if ([md.moduleName isEqualToString:moduleName]) {
             return md;
         }
@@ -130,7 +141,8 @@ static NSString *const TFolderPath = @"TFolderPath";
 
 -(Module *)findModuleWithRemoteUrl:(NSString *)remoteurl;
 {
-    for (Module *md in self.modules) {
+     
+    for (Module *md in modules) {
         if ([md.remoteurl isEqualToString:remoteurl]) {
             return md;
         }
@@ -157,7 +169,10 @@ static NSString *const TFolderPath = @"TFolderPath";
 -(BOOL)storageModule:(Module *)module data:(NSData *)data;
 {
     if (!module) return NO;
-    [self.modulesInProcess addObject:module];
+    if (!data) {
+        module.status = ModuleStatusNone;
+        return NO;
+    }
     NSString *fileName = [[module.remoteurl componentsSeparatedByString:@"/"] lastObject];
     NSString *floderpath = nil;
     NSString *epath = [NSString stringWithFormat:@"%@/%@",[self cachePath],module.moduleName];
@@ -165,17 +180,16 @@ static NSString *const TFolderPath = @"TFolderPath";
     [self createpath:epath];
     [self createpath:tpath];
     if ([needArchiveType containsObject:module.type]) {//解压
-        module.status = ModuleStatusNeedArchize;
         floderpath = tpath;
     }else
     {//直写
         floderpath = epath;
     }
+    NSError *error;
     NSString *filefullpath = [NSString stringWithFormat:@"%@/%@",floderpath,fileName];
     BOOL success = [data writeToFile:filefullpath atomically:YES];
-//    [NSThread sleepForTimeInterval:10];
+    module.status = ModuleStatusNeedArchize;
     if ([needArchiveType containsObject:module.type]) {
-        NSError *error;
         NSString *zipArchivePath = [NSString stringWithFormat:@"%@/%@",floderpath,module.moduleName];
         [self createpath:zipArchivePath];
         [Zip unzipFileAtPath:filefullpath toDestination:zipArchivePath overwrite:YES password:nil error:&error];
@@ -198,7 +212,7 @@ static NSString *const TFolderPath = @"TFolderPath";
         }else
             module.status = ModuleStatusNone;
     }
-    [self.modulesInProcess removeObject:module];
+    
     Module *tempMoule = [self findModuleWithModuleName:module.moduleName];
     tempMoule.status = module.status;
     @synchronized (self) {
@@ -206,9 +220,11 @@ static NSString *const TFolderPath = @"TFolderPath";
         [[NSUserDefaults standardUserDefaults] setObject:archiveCarPriceData forKey:@"modules"];
         [[NSUserDefaults standardUserDefaults] synchronize];
     }
-    NSThread *thread = self.threadrunloops[module.moduleName][@"thread"];
+    [self delModuleInProgress:module];
+    NSLog(@"storageModule error %@",error);
+    NSThread *thread = threadrunloops[module.moduleName][@"thread"];
     if (thread){
-        [self performSelector:@selector(changeloop:) onThread:thread withObject:self.threadrunloops[module.moduleName] waitUntilDone:YES];
+        [self performSelector:@selector(changeloop:) onThread:thread withObject:threadrunloops[module.moduleName] waitUntilDone:YES];
     }
     return success;
 }
@@ -272,8 +288,10 @@ static NSString *const TFolderPath = @"TFolderPath";
     CFRunLoopSourceContext context = {0, (__bridge void *)(self), NULL, NULL, NULL, NULL, NULL, NULL, NULL, &RunLoopSourcePerformRoutine};
     CFRunLoopSourceRef source = CFRunLoopSourceCreate(kCFAllocatorDefault, 0, &context);
     CFRunLoopAddSource(cfRunloop, source, kCFRunLoopDefaultMode);
-    while (!_refreshFlag) {
-        [self.threadrunloops setObject:@{@"loop":(__bridge id)cfRunloop,@"src":(__bridge id)source,@"thread":[NSThread currentThread]} forKey:@"afterModuleInit"];
+    while (!refreshFlag) {
+        @synchronized (threadrunloops) {
+            [threadrunloops setObject:@{@"loop":(__bridge id)cfRunloop,@"src":(__bridge id)source,@"thread":[NSThread currentThread]} forKey:@"afterModuleInit"];
+        }
         CFRunLoopRun();
     }
     CFRunLoopRemoveSource(CFRunLoopGetCurrent(), source, kCFRunLoopDefaultMode);
@@ -292,22 +310,19 @@ void RunLoopSourcePerformRoutine (void *info)
 -(BOOL)modulesInProcess:(Module *)module
 {
     if (!module) return NO;
-
-    static dispatch_once_t onceToken;
     CFRunLoopSourceContext context = {0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL};
     CFRunLoopRef cfRunloop = CFRunLoopGetCurrent();
     CFRunLoopSourceRef source = CFRunLoopSourceCreate(kCFAllocatorDefault, 0, &context);
     CFRunLoopAddSource(cfRunloop, source, kCFRunLoopDefaultMode);
     while (1) {
         BOOL inp = NO;
-        for (Module *md in self.modulesInProcess) {
-            if ([md.remoteurl isEqualToString:module.remoteurl] && [md.moduleName isEqualToString:module.moduleName]) {
-                inp = YES;
-                break;
-            }
+        if ([self findModuleInProgress:module]) {
+            inp = YES;
         }
         if (inp) {
-            [self.threadrunloops setObject:@{@"loop":(__bridge id)cfRunloop,@"src":(__bridge id)source,@"thread":[NSThread currentThread]} forKey:module.moduleName];
+            @synchronized (threadrunloops) {
+                [threadrunloops setObject:@{@"loop":(__bridge id)cfRunloop,@"src":(__bridge id)source,@"thread":[NSThread currentThread]} forKey:module.moduleName];
+            }
             CFRunLoopRun();
         }else
         {
@@ -324,5 +339,39 @@ void RunLoopSourcePerformRoutine (void *info)
     if (!threadrunloops) return;
     CFRunLoopRef loop = (__bridge CFRunLoopRef)(threadrunloops[@"loop"]);
     if (loop) CFRunLoopStop(loop);
+}
+
+-(void)addModuleInProgress:(Module *)module
+{
+    @synchronized (modulesInProcess) {
+        if (![self findModuleInProgress:module])
+        {
+            module.status = ModuleStatusDowning;
+            [modulesInProcess addObject:module];
+        }
+    }
+}
+
+-(BOOL)isProgressRuning;
+{
+    return modulesInProcess.count!=0?YES:NO;
+}
+
+-(void)delModuleInProgress:(Module *)module
+{
+    @synchronized (modulesInProcess) {
+        Module *tmd = [self findModuleInProgress:module];
+        if (tmd) [modulesInProcess removeObject:tmd];
+    }
+}
+
+-(Module *)findModuleInProgress:(Module *)module
+{
+    for (Module *md in modulesInProcess) {
+        if ([module.moduleName isEqualToString:md.moduleName] && [module.remoteurl isEqualToString:md.remoteurl]) {
+            return md;
+        }
+    }
+    return nil;
 }
 @end

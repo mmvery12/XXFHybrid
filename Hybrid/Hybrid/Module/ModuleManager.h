@@ -10,7 +10,6 @@
 static NSString *const EFolderPath = @"EFolderPath";
 @class Module;
 @interface ModuleManager : NSObject
-@property (nonatomic,readonly,getter=getUseModules)NSArray *useModules;
 //自检，会删除没有存档的文件
 -(void)selfAnalyze;
 -(NSArray <Module *>*)modulesFromeDictionary:(NSDictionary *)dict;
@@ -19,6 +18,7 @@ static NSString *const EFolderPath = @"EFolderPath";
 //返回输入URI指向的文件数据
 -(NSData *)findSourceAtRelativePath:(NSString *)path;
 //返回指定module名对应的module结构
+-(Module *)findModuleWithModule:(Module *)module;
 -(Module *)findModuleWithModuleName:(NSString *)moduleName;
 -(Module *)findModuleWithRemoteUrl:(NSString *)remoteurl;
 //返回指定module名、文件名对应的数据
@@ -29,4 +29,7 @@ static NSString *const EFolderPath = @"EFolderPath";
 -(BOOL)isModuleReady:(Module *)module;
 //module确定后才能执行交互操作，不然module中找不到对应的module
 -(void)afterModuleInit:(dispatch_block_t)block;
+
+-(void)addModuleInProgress:(Module *)module;
+-(BOOL)isProgressRuning;
 @end
