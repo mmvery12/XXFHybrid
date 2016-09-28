@@ -8,7 +8,7 @@
 
 #import <Foundation/Foundation.h>
 static NSString *const EFolderPath = @"EFolderPath";
-@class Module;
+#import "Module.h"
 @interface ModuleManager : NSObject
 //自检，会删除没有存档的文件
 -(void)selfAnalyze;
@@ -26,7 +26,7 @@ static NSString *const EFolderPath = @"EFolderPath";
 //请勿在主线程执行次函数，有写文件操作
 -(BOOL)storageModule:(Module *)module data:(NSData *)data;
 //判断module是否可用
--(BOOL)isModuleReady:(Module *)module;
+-(ModuleStatus)isModuleReady:(Module *)module;
 //module确定后才能执行交互操作，不然module中找不到对应的module
 -(void)afterModuleInit:(dispatch_block_t)block;
 
