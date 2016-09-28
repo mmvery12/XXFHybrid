@@ -35,32 +35,35 @@
 
 -(void)addTask:(NSString *)urlStr params:(id)params complete:(void (^)(NSData *data,NSError *error))block;
 {
-    @synchronized (self) {
-        NSMutableDictionary *tempdict = [operDict objectForKey:urlStr];
-        NSMutableArray *temparr = nil;
-        if (tempdict) {
-            temparr = [tempdict objectForKey:@"blocks"];
+    NSMutableDictionary *tempdict = [operDict objectForKey:urlStr];
+    NSMutableArray *temparr = nil;
+    if (tempdict && tempdict.count!=0) {
+        temparr = [tempdict objectForKey:@"blocks"];
+        @synchronized (operDict) {
             [temparr addObject:block];
-            return;
         }
-        NSMethodSignature  *signature = [self.class instanceMethodSignatureForSelector:@selector(download:params:count:)];
-        NSInvocation *inv = [NSInvocation invocationWithMethodSignature:signature];
-        [inv setSelector:@selector(download:params:count:)];
-        [inv setTarget:self];
-        [inv setArgument:&urlStr atIndex:2];
-        NSData *data = [params dataUsingEncoding:NSUTF8StringEncoding];
-        [inv setArgument:&data atIndex:3];
-        int i= 0;
-        [inv setArgument:&i atIndex:4];
-        NSInvocationOperation *inoper = [[NSInvocationOperation alloc] initWithInvocation:inv];
-        
-        tempdict = [NSMutableDictionary new];
-        temparr = [NSMutableArray new];
-        [temparr addObject:block];
-        [tempdict setObject:temparr forKeyedSubscript:@"blocks"];
-        [operDict setObject:tempdict forKey:urlStr];
-        [queue addOperation:inoper];
+        return;
     }
+    NSMethodSignature  *signature = [self.class instanceMethodSignatureForSelector:@selector(download:params:count:)];
+    NSInvocation *inv = [NSInvocation invocationWithMethodSignature:signature];
+    [inv setSelector:@selector(download:params:count:)];
+    [inv setTarget:self];
+    [inv setArgument:&urlStr atIndex:2];
+    NSData *data = [params dataUsingEncoding:NSUTF8StringEncoding];
+    [inv setArgument:&data atIndex:3];
+    int i= 0;
+    [inv setArgument:&i atIndex:4];
+    NSInvocationOperation *inoper = [[NSInvocationOperation alloc] initWithInvocation:inv];
+    
+    tempdict = [NSMutableDictionary new];
+    temparr = [NSMutableArray new];
+    [temparr addObject:block];
+    [tempdict setObject:temparr forKeyedSubscript:@"blocks"];
+    @synchronized (operDict) {
+        [operDict setObject:tempdict forKey:urlStr];
+    }
+    [queue addOperation:inoper];
+    
 }
 
 -(void)download:(NSString *)url params:(NSData *)data count:(NSInteger)count;
@@ -68,11 +71,12 @@
     NSLog(@"one url begin download %@",url);
     //尝试3次，3次后返回下载错误
     if (count==3) {
-        @synchronized (self) {
-            for (void (^block)(NSData *data,NSError *error) in [operDict objectForKey:url][@"blocks"]) {
-                block(nil,[NSError errorWithDomain:@"error" code:-100 userInfo:@{NSLocalizedDescriptionKey:@"net error"}]);
-            }
+        NSArray *tempArr = [NSArray arrayWithArray:[operDict objectForKey:url][@"blocks"]];
+        @synchronized (operDict) {
             [operDict removeObjectForKey:url];
+        }
+        for (void (^block)(NSData *data,NSError *error) in [operDict objectForKey:url][@"blocks"]) {
+            block(nil,[NSError errorWithDomain:@"error" code:-100 userInfo:@{NSLocalizedDescriptionKey:@"net error"}]);
         }
         return;
     }
@@ -85,12 +89,14 @@
     NSError *error;
     NSData *receivedata = [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:&error];
     if (receivedata && !error) {
-        @synchronized (self) {
-            for (void (^block)(NSData *data,NSError *error) in [operDict objectForKey:url][@"blocks"]) {
-                block(receivedata,nil);
-            }
+        NSArray *tempArr = [NSArray arrayWithArray:[operDict objectForKey:url][@"blocks"]];
+        @synchronized (operDict) {
             [operDict removeObjectForKey:url];
         }
+        for (void (^block)(NSData *data,NSError *error) in tempArr) {
+            block(receivedata,nil);
+        }
+        
     }else
     {
         NSLog(@"one url faild download %@",url);
@@ -133,11 +139,9 @@
 
 -(BOOL)isAllTaskFinishWithTag:(NSString *)tag;
 {
-    @synchronized (tasksCheckTag) {
-        if ([tasksCheckTag[tag] count]!=0) {
-            return NO;
-        }
-        return YES;
+    if ([tasksCheckTag[tag] count]!=0) {
+        return NO;
     }
+    return YES;
 }
 @end

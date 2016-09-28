@@ -28,13 +28,17 @@
 -(void)UIApplicationWillEnterForegroundNotification
 {
     [self timerBegin];
-    [self start];
+}
+
+-(void)UIApplicationDidFinishLaunchingNotification
+{
+    [self timerBegin];
 }
 
 -(void)timerBegin
 {
     [self timerEnd];
-    timer = [NSTimer timerWithTimeInterval:60*60 target:self selector:@selector(start) userInfo:nil repeats:YES];
+    timer = [NSTimer timerWithTimeInterval:10 target:self selector:@selector(start) userInfo:nil repeats:YES];
     [[NSRunLoop currentRunLoop] addTimer:timer forMode:NSRunLoopCommonModes];
 }
 
@@ -69,6 +73,8 @@
         netWorkManager = [NetWorkManager new];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(UIApplicationWillEnterForegroundNotification) name:UIApplicationWillEnterForegroundNotification object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(UIApplicationDidEnterBackgroundNotification) name:UIApplicationDidEnterBackgroundNotification object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(UIApplicationDidFinishLaunchingNotification) name:UIApplicationDidFinishLaunchingNotification object:nil];
+        
     }
     return self;
 }
@@ -95,7 +101,9 @@
 
 -(void)start
 {
+    NSLog(@"will start");
     if (![moduleManager isProgressRuning]) {
+        NSLog(@"did start");
         [self remoteChecking];//远程下发服务
     }
 }
@@ -292,13 +300,15 @@
         Module *tmd = nil;
         tmd = [moduleManager findModuleWithModule:md];
         if ([moduleManager isModuleReady:tmd]==ModuleStatusNone) {
-            if ([md.remoteurl isKindOfClass:[NSString class]] && md.remoteurl.length!=0) {
+            if ([tmd.remoteurl isKindOfClass:[NSString class]] && tmd.remoteurl.length!=0) {
                 [moduleManager addModuleInProgress:tmd];
-                [array addObject:md.remoteurl];
+                [array addObject:tmd.remoteurl];
             }
         }
+        tmd = nil;
     }
     if (array.count==0) {
+        array = nil;
         resultblock();
         return;
     }

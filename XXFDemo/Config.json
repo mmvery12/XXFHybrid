@@ -33,7 +33,7 @@
                 "identify": "xxxxx",
                 "moduleName": "moduleD",
                 "remoteurl": "http://img30.360buyimg.com/jdwork/jfs/t3295/328/2378959747/209593/a102beca/57e0e8eeN6e03ada9.jpg",
-                "version": "1.0.0",
+                "version": "2.0.0",
                 "type" : "jpeg",
                 "depend": [
                            "moduleA"

@@ -43,7 +43,7 @@ static NSString *const TFolderPath = @"TFolderPath";
     if ([temp isKindOfClass:[NSArray class]]) {
         modules = [NSMutableArray arrayWithArray:temp];
     }
-     
+    myEncodedObject = nil;
     for (Module *md in modules) {
         if (md.status == ModuleStatusDowning) {
             md.status = ModuleStatusNone;
@@ -74,10 +74,9 @@ static NSString *const TFolderPath = @"TFolderPath";
 
 -(void)analyzeModules:(NSArray <Module *> *)modules_ result:(void (^)(NSArray <Module *> *))resultblock;
 {
-     
     refreshFlag = NO;
     NSMutableArray *needUpdate = [NSMutableArray new];
-    @synchronized (self) {
+    @synchronized (modules) {
         if ([modules_ isKindOfClass:[NSArray class]] && modules_.count!=0) {
             NSMutableArray *normal = [NSMutableArray new];
             {
@@ -103,6 +102,7 @@ static NSString *const TFolderPath = @"TFolderPath";
                 NSData *archiveCarPriceData = [NSKeyedArchiver archivedDataWithRootObject:modules];
                 [[NSUserDefaults standardUserDefaults] setObject:archiveCarPriceData forKey:@"modules"];
                 [[NSUserDefaults standardUserDefaults] synchronize];
+                archiveCarPriceData = nil;
             }
         }
     
@@ -111,13 +111,9 @@ static NSString *const TFolderPath = @"TFolderPath";
         }
         
     }
-    NSThread *thread;
-    thread = threadrunloops[@"afterModuleInit"][@"thread"];
     resultblock(needUpdate);
     refreshFlag = YES;
-    if (thread){
-        [self performSelector:@selector(changeloop:) onThread:thread withObject:threadrunloops[@"afterModuleInit"] waitUntilDone:YES];
-    }
+    [self changeloop:threadrunloops[@"afterModuleInit"]];
 }
 -(Module *)findModuleWithModule:(Module *)module;
 {
@@ -223,10 +219,7 @@ static NSString *const TFolderPath = @"TFolderPath";
     }
     [self delModuleInProgress:module];
     NSLog(@"storageModule error %@",error);
-    NSThread *thread = threadrunloops[module.moduleName][@"thread"];
-    if (thread){
-        [self performSelector:@selector(changeloop:) onThread:thread withObject:threadrunloops[module.moduleName] waitUntilDone:YES];
-    }
+    [self changeloop:threadrunloops[module.moduleName]];
     return success;
 }
 
@@ -291,10 +284,11 @@ static NSString *const TFolderPath = @"TFolderPath";
     CFRunLoopAddSource(cfRunloop, source, kCFRunLoopDefaultMode);
     while (!refreshFlag) {
         @synchronized (threadrunloops) {
-            [threadrunloops setObject:@{@"loop":(__bridge id)cfRunloop,@"src":(__bridge id)source,@"thread":[NSThread currentThread]} forKey:@"afterModuleInit"];
+            [threadrunloops setObject:@{@"loop":(__bridge id)cfRunloop,@"src":(__bridge id)source} forKey:@"afterModuleInit"];
         }
         CFRunLoopRun();
     }
+    [threadrunloops removeObjectForKey:@"afterModuleInit"];
     CFRunLoopRemoveSource(CFRunLoopGetCurrent(), source, kCFRunLoopDefaultMode);
     CFRelease(source);
     if (block) {
@@ -322,7 +316,7 @@ void RunLoopSourcePerformRoutine (void *info)
         }
         if (inp) {
             @synchronized (threadrunloops) {
-                [threadrunloops setObject:@{@"loop":(__bridge id)cfRunloop,@"src":(__bridge id)source,@"thread":[NSThread currentThread]} forKey:module.moduleName];
+                [threadrunloops setObject:@{@"loop":(__bridge id)cfRunloop,@"src":(__bridge id)source} forKey:module.moduleName];
             }
             CFRunLoopRun();
         }else
@@ -330,6 +324,7 @@ void RunLoopSourcePerformRoutine (void *info)
             break;
         }
     }
+    [threadrunloops removeObjectForKey:module.moduleName];
     CFRunLoopRemoveSource(cfRunloop, source, kCFRunLoopDefaultMode);
     CFRelease(source);
     return NO;
