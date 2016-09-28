@@ -10,27 +10,29 @@
 ****************************************/
 #import "Comm.h"
 #import <UIKit/UIKit.h>
-#define Com___Params_CallBackJsMethod_CallBackJsBlockIdentity_ExcWebView(_serviceName) \
-+(void)com##_serviceName:(id)params p2:(NSString *)callbackjsmethod p3:(NSString *)callbackjsblockidentity p4:(UIWebView *)excwebview
+#define ___Dict_CallBackJsMethod_CallBackJsBlockIdentity_ExcWebView(_serviceName) \
++(void)com##_serviceName:(id)params \
+                      p2:(NSString *)callbackjsmethod \
+                      p3:(NSString *)callbackjsblockidentity \
+                      p4:(UIWebView *)excwebview
 
 @implementation Comm
 +(BOOL)resolveInstanceMethod:(SEL)sel
 {
-    @selector(comNavigationHidden:p2:p3:p4:);
     return YES;
 }
 
-Com___Params_CallBackJsMethod_CallBackJsBlockIdentity_ExcWebView(NavigationHidden)
+___Dict_CallBackJsMethod_CallBackJsBlockIdentity_ExcWebView(NavigationHidden)
 {
     
 }
 
-Com___Params_CallBackJsMethod_CallBackJsBlockIdentity_ExcWebView(TabbarHidden)
+___Dict_CallBackJsMethod_CallBackJsBlockIdentity_ExcWebView(TabbarHidden)
 {
 
 }
 
-Com___Params_CallBackJsMethod_CallBackJsBlockIdentity_ExcWebView(Storage)
+___Dict_CallBackJsMethod_CallBackJsBlockIdentity_ExcWebView(Storage)
 {
     
 }
