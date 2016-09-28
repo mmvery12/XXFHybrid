@@ -196,6 +196,7 @@ static NSString *const TFolderPath = @"TFolderPath";
         if (error) {//
             module.status = ModuleStatusNone;
             success = NO;
+            [fileManager removeItemAtPath:filefullpath error:&error];
         }else
         {
             if ([fileManager fileExistsAtPath:epath]) {
