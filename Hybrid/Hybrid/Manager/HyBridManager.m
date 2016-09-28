@@ -108,12 +108,9 @@ static BOOL debugOn = NO;
 
 -(void)start
 {
-    NSLog(@"will start");
     if (![moduleManager isProgressRuning] && !isrefresh) {
-        NSLog(@"did start");
         [self remoteChecking];//远程下发服务
     }
-    NSLog(@"end start");
 }
 
 -(void)remoteChecking
