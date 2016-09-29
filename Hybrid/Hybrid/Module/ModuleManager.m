@@ -137,7 +137,7 @@ static NSString *const TFolderPath = @"TFolderPath";
     @synchronized (self) {
         refreshFlag = YES;
     }
-    [self changeloop:threadrunloops[@"afterModuleInit"]];
+    [self changeloop:threadrunloops[@"afterModuleInit"] key:@"afterModuleInit"];
 }
 -(Module *)findModuleWithModule:(Module *)module;
 {
@@ -243,7 +243,7 @@ static NSString *const TFolderPath = @"TFolderPath";
         }
         [self delModuleInProgress:module];
     }
-    [self changeloop:threadrunloops[module.moduleName]];
+    [self changeloop:threadrunloops[module.moduleName] key:module.moduleName];
     return success;
 }
 
@@ -320,9 +320,6 @@ static NSString *const TFolderPath = @"TFolderPath";
         while (!refreshFlag) {
             CFRunLoopRun;
         }
-        @synchronized (threadrunloops) {
-            [threadrunloops removeObjectForKey:@"afterModuleInit"];
-        }
     }
     CFRunLoopRemoveSource(CFRunLoopGetCurrent(), source, kCFRunLoopCommonModes);
     CFRelease(source);
@@ -358,9 +355,6 @@ static NSString *const TFolderPath = @"TFolderPath";
         }else
             break;
     }
-    @synchronized (threadrunloops) {
-        [threadrunloops removeObjectForKey:module.moduleName];
-    }
     CFRunLoopRemoveSource(cfRunloop, source, kCFRunLoopCommonModes);
     CFRelease(source);
     return NO;
@@ -368,12 +362,15 @@ static NSString *const TFolderPath = @"TFolderPath";
 
 
 
--(void)changeloop:(NSDictionary *)threadrunloops
+-(void)changeloop:(NSDictionary *)threadrunloops_ key:(NSString *)key;
 {
-    if (!threadrunloops) return;
-    for (NSDictionary *dict in threadrunloops) {
+    if (!threadrunloops_) return;
+    for (NSDictionary *dict in threadrunloops_) {
         CFRunLoopRef loop = (__bridge CFRunLoopRef)(dict[@"loop"]);
         if (loop) CFRunLoopStop(loop);
+    }
+    @synchronized (threadrunloops) {
+        [threadrunloops removeObjectForKey:key];
     }
 }
 
