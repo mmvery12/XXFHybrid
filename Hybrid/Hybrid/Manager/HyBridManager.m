@@ -34,15 +34,9 @@ static BOOL debugOn = NO;
     Log(@"UIApplicationDidEnterBackgroundNotification timer end");
     [self timerEnd];
 }
--(void)UIApplicationWillEnterForegroundNotification
+-(void)UIApplicationDidBecomeActiveNotification
 {
-    Log(@"UIApplicationWillEnterForegroundNotification timer begin");
-    [self timerBegin];
-}
-
--(void)UIApplicationDidFinishLaunchingNotification
-{
-    Log(@"UIApplicationDidFinishLaunchingNotification timer begin");
+    Log(@"UIApplicationDidBecomeActiveNotification timer begin");
     [self timerBegin];
 }
 
@@ -77,9 +71,8 @@ static BOOL debugOn = NO;
     if (self) {
         moduleManager = [ModuleManager new];
         netWorkManager = [NetWorkManager new];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(UIApplicationWillEnterForegroundNotification) name:UIApplicationWillEnterForegroundNotification object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(UIApplicationDidEnterBackgroundNotification) name:UIApplicationDidEnterBackgroundNotification object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(UIApplicationDidFinishLaunchingNotification) name:UIApplicationDidFinishLaunchingNotification object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(UIApplicationDidBecomeActiveNotification) name:UIApplicationDidBecomeActiveNotification object:nil];
         
     }
     return self;
@@ -91,9 +84,9 @@ static BOOL debugOn = NO;
     [[HyBridManager Manager] start];
 }
 
-+(BOOL)HandleWebViewURL:(NSURL *)url CommExcWebView:(id)webview
++(BOOL)HandleWebViewURL:(NSURL *)url CommExcWebView:(id)webview CommExcResult:(void (^)(NSString *jsMethodName,NSString *jsIdentify,id jsParams))reslut
 {
-    return [[HyBridManager Manager] handleWebViewURL:url CommExcWebView:webview];
+    return [[HyBridManager Manager] handleWebViewURL:url CommExcWebView:webview CommExcResult:reslut];
 }
 
 +(void)UseResourceWithURI:(NSString *)uri complete:(void (^)(NSData *source, NSError *error))block;
@@ -120,7 +113,9 @@ static BOOL debugOn = NO;
     @synchronized (self) {
         wrRefresh = YES;
     }
+    Log(@"remoteChecking begin");
     [netWorkManager addTask:@"http://www.baidu.com" params:nil complete:^(NSData *data, NSError *error) {
+        Log(@"remoteChecking end");
         if (!error) {
             data = [NSData dataWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"Config" ofType:@"json"]];
             [weakSelf analyzeRemoteConfig:[NSJSONSerialization JSONObjectWithData:data options:0 error:nil]];
@@ -141,7 +136,9 @@ static BOOL debugOn = NO;
     __weak typeof(netWorkManager) weakNetManager = netWorkManager;
     __weak typeof(self) weakSelf = self;
     //版本分析策略不上传本地资源由native自行判断,服务器下发统一的最新资源配置
+    Log(@"analyzeModules begin");
     [moduleManager analyzeModules:[weakModuleManager modulesFromeDictionary:remoteConfigDict] result:^(NSArray<Module *> *modules) {
+        Log(@"analyzeModules end");
         //    modules =  [self sortModulesSequence:modules];//    计算各个模块权重
         [weakSelf hookWithModules:modules result:^{
             Log(@"all allcomplete analyzeRemoteConfig");
@@ -149,7 +146,7 @@ static BOOL debugOn = NO;
     }];
 }
 
--(BOOL)handleWebViewURL:(NSURL *)url_ CommExcWebView:(id)webview;
+-(BOOL)handleWebViewURL:(NSURL *)url_ CommExcWebView:(id)webview CommExcResult:(void (^)(NSString *jsMethodName,NSString *jsIdentify,id jsParams))reslut;
 {
     NSString *scheme = url_.scheme;
     NSString *host = url_.host;
@@ -163,7 +160,7 @@ static BOOL debugOn = NO;
         
         Class cls = NSClassFromString(@"Comm");
         NSAssert(cls, @"[ERROR] Class 'Comm' not found in project!");
-        SEL sel = NSSelectorFromString([NSString stringWithFormat:@"com%@:p2:p3:p4:",dict[keyCommServiceName]]);
+        SEL sel = NSSelectorFromString([NSString stringWithFormat:@"com%@:p2:p3:p4:p5:",dict[keyCommServiceName]]);
         id params = dict[keyCommParams];
         id cbsel = dict[keyCommJsCallBackMethodName];
         id identify = dict[keyCommJsCallBackIdentify];
@@ -176,6 +173,7 @@ static BOOL debugOn = NO;
         [inv setArgument:&cbsel atIndex:3];
         [inv setArgument:&identify atIndex:4];
         [inv setArgument:&webview atIndex:5];
+        [inv setArgument:&reslut atIndex:6];
         [inv invoke];
         return NO;
     }
@@ -306,7 +304,7 @@ static BOOL debugOn = NO;
  ************/
 -(void)hookWithModules:(NSArray <Module *> *)modules_ result:(void (^)(void))resultblock
 {
-    Log(@"hookWithModules analyse moduels");
+    Log(@"hookWithModules begin analyse moduels");
     __weak typeof(moduleManager) weakModuleManager = moduleManager;
     __weak typeof(netWorkManager) weakNetManager = netWorkManager;
     NSMutableArray *array = [NSMutableArray new];

@@ -21,18 +21,16 @@
     [self.view addSubview:webview];
     [webview loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:@"http://www.baidu.com"]]];
     webview.delegate = self;
-    [self xxxx];
+    webview.alpha = 0;
+    [self btntap:nil];
 }
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
 }
 
--(void)xxxx
-{
-    [HyBridManager UseResourceWithModuleName:@"moduleA" fileName:@"TencentOpenAPI" complete:^(NSData *source, NSError *error) {
-        
-    }];
+- (IBAction)btntap:(id)sender {
+    [HyBridManager UseResourceWithModuleName:@"moduleA" fileName:@"TencentOpenAPI" complete:^(NSData *source, NSError *error) {}];
 }
 
 
@@ -45,7 +43,9 @@
     str = [NSString stringWithFormat:@"%@://%@?%@=%@",keyUrlScheme,keyUrlHost,keyUrlParams,str];
     str = [str stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
     NSURL *temp = [NSURL URLWithString:str];
-    return [HyBridManager HandleWebViewURL:temp CommExcWebView:webView];
+    return [HyBridManager HandleWebViewURL:temp CommExcWebView:webView CommExcResult:^(NSString *jsMethodName, NSString *jsIdentify, id jsParams) {
+        
+    }];
 }
 - (void)webViewDidStartLoad:(UIWebView *)webView;
 {
