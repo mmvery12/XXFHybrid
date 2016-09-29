@@ -88,6 +88,7 @@ static NSString *const TFolderPath = @"TFolderPath";
                     Module *mmd = [self findModuleWithModuleName:md.moduleName];
                     if (mmd &&
                         [md.version isEqualToString:mmd.version] &&
+                        [md.remoteurl isEqualToString:mmd.remoteurl] &&
                         ([self isModuleReady:mmd]==ModuleStatusReady ||
                         [self isModuleReady:mmd]==ModuleStatusNeedArchize)) {
                             if ([self isModuleReady:mmd]==ModuleStatusReady) {
