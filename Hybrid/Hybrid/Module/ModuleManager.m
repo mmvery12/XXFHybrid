@@ -16,12 +16,13 @@ static NSString *const TFolderPath = @"TFolderPath";
     NSSet *needArchiveType;
     NSMutableArray *modules;
     NSMutableArray *modulesInProcess;
-    NSMutableDictionary *threadrunloops;
     BOOL refreshFlag;
 }
+@property (nonatomic,strong)NSMutableDictionary *threadrunloops;
 @end
 
 @implementation ModuleManager
+@synthesize threadrunloops = threadrunloops;
 - (instancetype)init
 {
     self = [super init];
@@ -74,7 +75,6 @@ static NSString *const TFolderPath = @"TFolderPath";
 
 -(void)analyzeModules:(NSArray <Module *> *)modules_ result:(void (^)(NSArray <Module *> *))resultblock;
 {
-    refreshFlag = NO;
     NSMutableArray *needUpdate = [NSMutableArray new];
     NSMutableArray *needArchive = [NSMutableArray new];
     @synchronized (modules) {
@@ -132,7 +132,6 @@ static NSString *const TFolderPath = @"TFolderPath";
         
     }
     resultblock(needUpdate);
-    refreshFlag = YES;
     [self changeloop:threadrunloops[@"afterModuleInit"]];
 }
 -(Module *)findModuleWithModule:(Module *)module;
@@ -201,6 +200,9 @@ static NSString *const TFolderPath = @"TFolderPath";
             module.status = ModuleStatusNeedArchize;
             if ([needArchiveType containsObject:module.type]) {//zip解压
                 NSString *fileSotrePath = [NSString stringWithFormat:@"%@/%@",tpath,module.moduleName];
+                if ([fileManager fileExistsAtPath:fileSotrePath]) {
+                    [fileManager removeItemAtPath:fileSotrePath error:&error];
+                }
                 [self createpath:fileSotrePath];
                 [Zip unzipFileAtPath:filefullpath toDestination:fileSotrePath overwrite:YES password:nil error:&error];
                 if (error) {//
@@ -236,7 +238,7 @@ static NSString *const TFolderPath = @"TFolderPath";
         }
         [self delModuleInProgress:module];
     }
-    [self changeloop:threadrunloops[module.moduleName]];
+    [self changeloop2:threadrunloops[module.moduleName]];
     return success;
 }
 
@@ -296,26 +298,31 @@ static NSString *const TFolderPath = @"TFolderPath";
 -(void)afterModuleInit:(dispatch_block_t)block;
 {
     CFRunLoopRef cfRunloop = CFRunLoopGetCurrent();
-    CFRunLoopSourceContext context = {0, (__bridge void *)(self), NULL, NULL, NULL, NULL, NULL, NULL, NULL, &RunLoopSourcePerformRoutine};
+    NSDictionary *dict = @{@"instance":self,@"block":block,@"key":@"afterModuleInit"};
+    CFRunLoopSourceContext context = {0, (__bridge void *)(dict), NULL, NULL, NULL, NULL, NULL, NULL, NULL, &SingleformRunloop};
     CFRunLoopSourceRef source = CFRunLoopSourceCreate(kCFAllocatorDefault, 0, &context);
     CFRunLoopAddSource(cfRunloop, source, kCFRunLoopDefaultMode);
-    while (!refreshFlag) {
-        @synchronized (threadrunloops) {
-            [threadrunloops setObject:@{@"loop":(__bridge id)cfRunloop,@"src":(__bridge id)source} forKey:@"afterModuleInit"];
-        }
+    @synchronized (threadrunloops) {
+        [threadrunloops setObject:@{@"loop":(__bridge id)cfRunloop,@"src":(__bridge id)source} forKey:@"afterModuleInit"];
+    }
+    while (1) {
         CFRunLoopRun();
     }
-    [threadrunloops removeObjectForKey:@"afterModuleInit"];
     CFRunLoopRemoveSource(CFRunLoopGetCurrent(), source, kCFRunLoopDefaultMode);
     CFRelease(source);
-    if (block) {
-        block();
-    }
 }
 
-void RunLoopSourcePerformRoutine (void *info)
+void SingleformRunloop (void *info)
 {
-    
+    NSDictionary *dict = (__bridge NSDictionary *)info;
+    ModuleManager *manager = dict[@"instance"];
+    dispatch_block_t block = dict[@"block"];
+    NSString *key = dict[@"key"];
+    NSMutableDictionary *threadrunloops = manager.threadrunloops;
+    @synchronized (threadrunloops) {
+        [threadrunloops removeObjectForKey:key];
+    }
+    if (block) block();
 }
 
 
@@ -337,17 +344,28 @@ void RunLoopSourcePerformRoutine (void *info)
             }
             CFRunLoopRun();
         }else
-        {
             break;
-        }
     }
-    [threadrunloops removeObjectForKey:module.moduleName];
+    @synchronized (threadrunloops) {
+        [threadrunloops removeObjectForKey:module.moduleName];
+    }
     CFRunLoopRemoveSource(cfRunloop, source, kCFRunLoopDefaultMode);
     CFRelease(source);
     return NO;
 }
 
+
+
 -(void)changeloop:(NSDictionary *)threadrunloops
+{
+    if (!threadrunloops) return;
+    CFRunLoopRef loop = (__bridge CFRunLoopRef)(threadrunloops[@"loop"]);
+    CFRunLoopSourceRef src = (__bridge CFRunLoopSourceRef)(threadrunloops[@"src"]);
+    CFRunLoopSourceSignal(src);
+    CFRunLoopWakeUp(loop);
+}
+
+-(void)changeloop2:(NSDictionary *)threadrunloops
 {
     if (!threadrunloops) return;
     CFRunLoopRef loop = (__bridge CFRunLoopRef)(threadrunloops[@"loop"]);

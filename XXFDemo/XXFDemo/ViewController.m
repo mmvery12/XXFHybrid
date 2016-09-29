@@ -30,17 +30,11 @@
 
 -(void)xxxx
 {
-    [HyBridManager UseResourceWithModuleName:@"moduleF" fileName:@"TencentOpenAPI" complete:^(NSData *source, NSError *error) {
-        
-    }];
-}
-
--(void)yyyy
-{
     [HyBridManager UseResourceWithModuleName:@"moduleA" fileName:@"TencentOpenAPI" complete:^(NSData *source, NSError *error) {
         
     }];
 }
+
 
 - (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType;
 {

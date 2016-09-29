@@ -208,7 +208,9 @@ static BOOL debugOn = NO;
     __weak typeof(moduleManager) weakmoduleManager = moduleManager;
     __weak typeof(self) weakSelf = self;
     dispatch_async(dispatch_get_global_queue(0, 0), ^{
+        Log(@"afterModuleInit begin");
         [weakmoduleManager afterModuleInit:^{
+            Log(@"afterModuleInit end");
             Module *md = [weakmoduleManager findModuleWithModuleName:name];
             if (!md) {
                 dispatch_async(dispatch_get_main_queue(), ^{
@@ -304,6 +306,7 @@ static BOOL debugOn = NO;
  ************/
 -(void)hookWithModules:(NSArray <Module *> *)modules_ result:(void (^)(void))resultblock
 {
+    Log(@"hookWithModules analyse moduels");
     __weak typeof(moduleManager) weakModuleManager = moduleManager;
     __weak typeof(netWorkManager) weakNetManager = netWorkManager;
     NSMutableArray *array = [NSMutableArray new];
@@ -320,6 +323,7 @@ static BOOL debugOn = NO;
     }
     if (array.count==0) {
         array = nil;
+        Log(@"hookWithModules moduels are all ready");
         resultblock();
         return;
     }

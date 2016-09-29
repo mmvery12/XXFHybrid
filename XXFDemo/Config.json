@@ -3,9 +3,9 @@
                 {
                 "identify": "xxxxx",
                 "moduleName": "moduleA",
-                "remoteurl": "http://g.hiphotos.baidu.com/news/q%3D100/sign=cf9cf7acbb1bb0518924b7280678da77/4e4a20a4462309f7f6b9569c7a0e0cf3d6cad66e.jpg",
-                "version": "2.0.0",
-                "type" : "jpeg",
+                "remoteurl": "http://7nj1i4.com1.z0.glb.clouddn.com/TencentOpenAPI.zip",
+                "version": "4.0.0",
+                "type" : "zip",
                 "depend": [
                            "moduleC",
                            "moduleB"
