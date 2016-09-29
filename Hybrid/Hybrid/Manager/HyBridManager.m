@@ -323,6 +323,7 @@ static BOOL debugOn = NO;
         resultblock();
         return;
     }
+    Log(@"hookWithModules will down load %@",array);
     [netWorkManager addTasks:array moduleComplete:^(NSString *url, NSData *data, NSError *error) {
         Module *module = [weakModuleManager findModuleWithRemoteUrl:url];
         Log(@"storageModule %@ %@",module.type,module.remoteurl);
