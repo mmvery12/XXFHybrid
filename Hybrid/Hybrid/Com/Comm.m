@@ -17,10 +17,14 @@
                       p4:(UIWebView *)excwebview \
                       p5:(void (^)(NSString *jsMethodName,NSString *jsIdentify,id jsParams))ExcResultBlock;
 
-#define ExcResultBlock(_AVG_) ExcResultBlock(callbackjsmethod,callbackjsblockidentity,_AVG_)
+#define ExcResultBlockWithResult(_AVG_) ExcResultBlock(callbackjsmethod,callbackjsblockidentity,_AVG_)
 
 @implementation Comm
-+(BOOL)resolveInstanceMethod:(SEL)sel
++ (BOOL)resolveInstanceMethod:(SEL)sel
+{
+    return YES;
+}
++ (BOOL)resolveClassMethod:(SEL)sel
 {
     return YES;
 }
@@ -37,7 +41,7 @@
 
 ___Dict_CallBackJsMethod_CallBackJsBlockIdentity_ExcWebView_ExcResultBlock(NavigationHidden)
 {
-    ExcResultBlock(nil);
+    ExcResultBlockWithResult(nil);
 }
 
 ___Dict_CallBackJsMethod_CallBackJsBlockIdentity_ExcWebView_ExcResultBlock(TabbarHidden)
