@@ -229,7 +229,7 @@ static BOOL debugOn = NO;
     [self hookWithModules:arrary result:^{
         dispatch_async(dispatch_get_main_queue(), ^{
             NSData *tdata = [weakModuleManager findDataWithModuleName:md.moduleName fileName:fileName];
-            Log(@"customer rescurseDepend data status %d",tdata?1:0);
+            Log(@"useResourceWithXX data output status %d",tdata?1:0);
             if (tdata) {
                 block(tdata,nil);
             }else
@@ -304,6 +304,7 @@ static BOOL debugOn = NO;
  ************/
 -(void)hookWithModules:(NSArray <Module *> *)modules_ result:(void (^)(void))resultblock
 {
+    Log(@"###########################################");
     Log(@"hookWithModules begin analyse moduels");
     __weak typeof(moduleManager) weakModuleManager = moduleManager;
     __weak typeof(netWorkManager) weakNetManager = netWorkManager;
@@ -322,13 +323,15 @@ static BOOL debugOn = NO;
     if (array.count==0) {
         array = nil;
         Log(@"hookWithModules moduels are all ready");
+        Log(@"hookWithModules moduels end analyse moduels");
+        Log(@"===========================================");
         resultblock();
         return;
     }
     Log(@"hookWithModules will down load %@",array);
     [netWorkManager addTasks:array moduleComplete:^(NSString *url, NSData *data, NSError *error) {
         Module *module = [weakModuleManager findModuleWithRemoteUrl:url];
-        Log(@"storageModule %@ %@",module.type,module.remoteurl);
+        Log(@"---->storageModule %@ %@",module.type,module.remoteurl);
         [weakModuleManager storageModule:module data:data];
     } allcomplete:resultblock];
 }
