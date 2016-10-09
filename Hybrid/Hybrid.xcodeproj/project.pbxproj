@@ -23,8 +23,6 @@
 		69917A081D92278D00DD0A05 /* Zip.m in Sources */ = {isa = PBXBuildFile; fileRef = 69917A011D92278D00DD0A05 /* Zip.m */; };
 		69AA55A91D990E1400B917EC /* CommFormatConfig.h in Headers */ = {isa = PBXBuildFile; fileRef = 69AA55A81D990E1400B917EC /* CommFormatConfig.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		69AA55AE1D9A02A200B917EC /* ZipArchive.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 69AA55AD1D9A02A200B917EC /* ZipArchive.framework */; };
-		69DBBA951D979BFD006711B9 /* WhiteHouseURLProtocol.h in Headers */ = {isa = PBXBuildFile; fileRef = 69DBBA931D979BFD006711B9 /* WhiteHouseURLProtocol.h */; };
-		69DBBA961D979BFD006711B9 /* WhiteHouseURLProtocol.m in Sources */ = {isa = PBXBuildFile; fileRef = 69DBBA941D979BFD006711B9 /* WhiteHouseURLProtocol.m */; };
 		69F2E7B21D90EC5D00603610 /* Hybrid.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 69F2E7A71D90EC5D00603610 /* Hybrid.framework */; };
 		69F2E7B71D90EC5D00603610 /* HybridTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 69F2E7B61D90EC5D00603610 /* HybridTests.m */; };
 /* End PBXBuildFile section */
@@ -56,8 +54,6 @@
 		69917A011D92278D00DD0A05 /* Zip.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Zip.m; sourceTree = "<group>"; };
 		69AA55A81D990E1400B917EC /* CommFormatConfig.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CommFormatConfig.h; sourceTree = "<group>"; };
 		69AA55AD1D9A02A200B917EC /* ZipArchive.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ZipArchive.framework; path = "../SSZipArchive/build/Debug-iphoneos/ZipArchive.framework"; sourceTree = "<group>"; };
-		69DBBA931D979BFD006711B9 /* WhiteHouseURLProtocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WhiteHouseURLProtocol.h; sourceTree = "<group>"; };
-		69DBBA941D979BFD006711B9 /* WhiteHouseURLProtocol.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WhiteHouseURLProtocol.m; sourceTree = "<group>"; };
 		69F2E7A71D90EC5D00603610 /* Hybrid.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Hybrid.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		69F2E7B11D90EC5D00603610 /* HybridTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = HybridTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		69F2E7B61D90EC5D00603610 /* HybridTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = HybridTests.m; sourceTree = "<group>"; };
@@ -134,15 +130,6 @@
 			path = Module;
 			sourceTree = "<group>";
 		};
-		69DBBA921D979BFD006711B9 /* URLProtocol */ = {
-			isa = PBXGroup;
-			children = (
-				69DBBA931D979BFD006711B9 /* WhiteHouseURLProtocol.h */,
-				69DBBA941D979BFD006711B9 /* WhiteHouseURLProtocol.m */,
-			);
-			path = URLProtocol;
-			sourceTree = "<group>";
-		};
 		69F2E79D1D90EC5D00603610 = {
 			isa = PBXGroup;
 			children = (
@@ -165,7 +152,6 @@
 		69F2E7A91D90EC5D00603610 /* Hybrid */ = {
 			isa = PBXGroup;
 			children = (
-				69DBBA921D979BFD006711B9 /* URLProtocol */,
 				699179FA1D92278D00DD0A05 /* Module */,
 				699179C21D91106C00DD0A05 /* Com */,
 				699179CE1D91106C00DD0A05 /* Manager */,
@@ -196,7 +182,6 @@
 				699179E51D91106C00DD0A05 /* Hybrid.h in Headers */,
 				69917A021D92278D00DD0A05 /* ModuleManager.h in Headers */,
 				699179E31D91106C00DD0A05 /* NetWorkManager.h in Headers */,
-				69DBBA951D979BFD006711B9 /* WhiteHouseURLProtocol.h in Headers */,
 				69917A051D92278D00DD0A05 /* Module.h in Headers */,
 				69917A071D92278D00DD0A05 /* Zip.h in Headers */,
 				699179E91D91108700DD0A05 /* Comm.h in Headers */,
@@ -303,7 +288,6 @@
 				69917A081D92278D00DD0A05 /* Zip.m in Sources */,
 				699179E41D91106C00DD0A05 /* NetWorkManager.m in Sources */,
 				699179EA1D91108700DD0A05 /* Comm.m in Sources */,
-				69DBBA961D979BFD006711B9 /* WhiteHouseURLProtocol.m in Sources */,
 				69917A061D92278D00DD0A05 /* Module.m in Sources */,
 				69917A031D92278D00DD0A05 /* ModuleManager.m in Sources */,
 				699179E21D91106C00DD0A05 /* HyBridManager.m in Sources */,

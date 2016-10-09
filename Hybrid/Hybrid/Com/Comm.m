@@ -46,12 +46,12 @@ ___Dict_CallBackJsMethod_CallBackJsBlockIdentity_ExcWebView_ExcResultBlock(Navig
 
 ___Dict_CallBackJsMethod_CallBackJsBlockIdentity_ExcWebView_ExcResultBlock(TabbarHidden)
 {
-
+    ExcResultBlockWithResult(nil);
 }
 
 ___Dict_CallBackJsMethod_CallBackJsBlockIdentity_ExcWebView_ExcResultBlock(Storage)
 {
-    
+    ExcResultBlockWithResult(nil);
 }
 
 @end
