@@ -39,8 +39,17 @@
 
 -(void)testHandle
 {
+    NSString *jsonStr = @"{\"__keyCommServiceName\":\"NavigationHidden\",\"__keyCommParams\":{\"hidden\":0},\"__keyCommJsCallBackMethodName\":\"nativeCallJs\",\"__keyCommJsCallBackIdentify\":\"NavigationHidden\"}";
+    NSData * data = [jsonStr dataUsingEncoding:NSUTF8StringEncoding];
+    NSDictionary *dict = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
+    data = [NSJSONSerialization dataWithJSONObject:dict options:0 error:nil];
+    NSString *str = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+    str = [NSString stringWithFormat:@"%@://%@?%@=%@",keyUrlScheme,keyUrlHost,keyUrlParams,str];
+    str = [str stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+    NSURL *temp = [NSURL URLWithString:str];
+    
     XCTestExpectation *exp = [self expectationWithDescription:@"a1"];
-    [HyBridManager HandleWebViewURL:nil CommExcWebView:nil CommExcResult:^(NSString *jsMethodName, NSString *jsIdentify, id jsParams) {
+    [HyBridManager HandleWebViewURL:temp CommExcWebView:nil CommExcResult:^(NSString *jsMethodName, NSString *jsIdentify, id jsParams) {
         [exp fulfill];
     }];
     [self waitForExpectationsWithTimeout:2 handler:^(NSError * _Nullable error) {

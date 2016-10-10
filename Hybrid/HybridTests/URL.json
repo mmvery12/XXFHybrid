@@ -1,8 +1,1 @@
-{
-    "__keyCommServiceName": "NavigationHidden",
-    "__keyCommParams": {
-        "hidden": 0
-    },
-    "__keyCommJsCallBackMethodName": "nativeCallJs",
-    "__keyCommJsCallBackIdentify": "NavigationHidden"
-}
+{\"__keyCommServiceName\":\"NavigationHidden\",\"__keyCommParams\":{\"hidden\":0},\"__keyCommJsCallBackMethodName\":\"nativeCallJs\",\"__keyCommJsCallBackIdentify\":\"NavigationHidden\"}
