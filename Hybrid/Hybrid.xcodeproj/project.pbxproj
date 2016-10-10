@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		6962ECFA1DAB98860019D50C /* Config.json in Resources */ = {isa = PBXBuildFile; fileRef = 6962ECF81DAB98860019D50C /* Config.json */; };
+		6962ECFB1DAB98860019D50C /* URL.json in Resources */ = {isa = PBXBuildFile; fileRef = 6962ECF91DAB98860019D50C /* URL.json */; };
 		699179E11D91106C00DD0A05 /* HyBridManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 699179CF1D91106C00DD0A05 /* HyBridManager.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		699179E21D91106C00DD0A05 /* HyBridManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 699179D01D91106C00DD0A05 /* HyBridManager.m */; };
 		699179E31D91106C00DD0A05 /* NetWorkManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 699179D21D91106C00DD0A05 /* NetWorkManager.h */; };
@@ -38,6 +40,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		6962ECF81DAB98860019D50C /* Config.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = Config.json; sourceTree = "<group>"; };
+		6962ECF91DAB98860019D50C /* URL.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = URL.json; sourceTree = "<group>"; };
 		699179CF1D91106C00DD0A05 /* HyBridManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HyBridManager.h; sourceTree = "<group>"; };
 		699179D01D91106C00DD0A05 /* HyBridManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HyBridManager.m; sourceTree = "<group>"; };
 		699179D21D91106C00DD0A05 /* NetWorkManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NetWorkManager.h; sourceTree = "<group>"; };
@@ -164,6 +168,8 @@
 		69F2E7B51D90EC5D00603610 /* HybridTests */ = {
 			isa = PBXGroup;
 			children = (
+				6962ECF81DAB98860019D50C /* Config.json */,
+				6962ECF91DAB98860019D50C /* URL.json */,
 				69F2E7B61D90EC5D00603610 /* HybridTests.m */,
 				69F2E7B81D90EC5D00603610 /* Info.plist */,
 			);
@@ -275,6 +281,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6962ECFA1DAB98860019D50C /* Config.json in Resources */,
+				6962ECFB1DAB98860019D50C /* URL.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -16,7 +16,7 @@
                 "moduleName": "moduleB",
                 "remoteurl": "http://img14.360buyimg.com/cms/jfs/t3163/365/2516901468/167838/6549aff2/57e24d21N624f138b.jpg",
                 "version": "1.0.0",
-                "type" : "jpeg",
+                "type" : "zip",
                 "depend": [
                            "moduleD"
                            ]

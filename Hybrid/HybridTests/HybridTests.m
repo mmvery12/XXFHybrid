@@ -7,7 +7,7 @@
 //
 
 #import <XCTest/XCTest.h>
-
+#import "HyBridManager.h"
 @interface HybridTests : XCTestCase
 
 @end
@@ -36,4 +36,40 @@
     }];
 }
 
+
+-(void)testHandle
+{
+    XCTestExpectation *exp = [self expectationWithDescription:@"a1"];
+    [HyBridManager HandleWebViewURL:nil CommExcWebView:nil CommExcResult:^(NSString *jsMethodName, NSString *jsIdentify, id jsParams) {
+        [exp fulfill];
+    }];
+    [self waitForExpectationsWithTimeout:2 handler:^(NSError * _Nullable error) {
+        NSLog(@"a");
+    }];
+    
+}
+
+-(void)testUseResult1
+{
+    XCTestExpectation *exp = [self expectationWithDescription:@"a2"];
+    [HyBridManager StartWithLog:YES];
+    [HyBridManager UseResourceWithURI:@"moduleA/logo.png" complete:^(NSData *source, NSError *error) {
+        [exp fulfill];
+    }];
+    [self waitForExpectationsWithTimeout:2 handler:^(NSError * _Nullable error) {
+        NSLog(@"a");
+    }];
+}
+
+-(void)testUseResult2
+{
+    XCTestExpectation *exp = [self expectationWithDescription:@"a3"];
+    [HyBridManager StartWithLog:YES];
+    [HyBridManager UseResourceWithModuleName:@"moduleA" fileName:@"57e24d21N624f138b.jpg" complete:^(NSData *source, NSError *error) {
+        [exp fulfill];
+    }];
+    [self waitForExpectationsWithTimeout:2 handler:^(NSError * _Nullable error) {
+        NSLog(@"a");
+    }];
+}
 @end

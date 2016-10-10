@@ -109,7 +109,7 @@ static BOOL debugOn = NO;
 -(void)remoteChecking
 {
     __weak typeof(self) weakSelf = self;
-    __block wrRefresh = isrefresh;
+    __block int wrRefresh = isrefresh;
     @synchronized (self) {
         wrRefresh = YES;
     }
@@ -117,13 +117,14 @@ static BOOL debugOn = NO;
     [netWorkManager addTask:@"http://www.baidu.com" params:nil complete:^(NSData *data, NSError *error) {
         Log(@"remoteChecking end");
         if (!error) {
-            data = [NSData dataWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"Config" ofType:@"json"]];
+            NSString *jsonStr = @"{\"modules\":[{\"identify\":\"xxxxx\",\"moduleName\":\"moduleA\",\"remoteurl\":\"http://source.jd.com/resource/img/logo.png\",\"version\":\"4.0.0\",\"type\":\"png\",\"depend\":[\"moduleC\",\"moduleB\"]},{\"identify\":\" xxxxx\",\"moduleName\":\"moduleB\",\"remoteurl\":\"http://img14.360buyimg.com/cms/jfs/t3163/365/2516901468/167838/6549aff2/57e24d21N624f138b.jpg\",\"version\":\"1.0.0\",\"type\":\"zip\",\"depend\":[\"moduleD\"]},{\"identify\":\"xxxxx\",\"moduleName\":\"moduleC\",\"remoteurl\":\"http://img30.360buyimg.com/jdwork/jfs/t3214/136/2299661031/96531/df1830e4/57df4683N659a9803.png\",\"version\":\"1.0.0\",\"type\":\"jpeg\",\"depend\":[]},{\"identify\":\"xxxxx\",\"moduleName\":\"moduleD\",\"remoteurl\":\"http://img30.360buyimg.com/jdwork/jfs/t3295/328/2378959747/209593/a102beca/57e0e8eeN6e03ada9.jpg\",\"version\":\"2.0.0\",\"type\":\"jpeg\",\"depend\":[\"moduleA\"]},{\"identify\":\" xxxxx\",\"moduleName\":\"moduleE\",\"remoteurl\":\"http://a.hiphotos.baidu.com/news/q%3D100/sign=7010b4832e9759ee4c5064cb82f9434e/5243fbf2b2119313c8942f3e6d380cd790238d6d.jpg\",\"version\":\"2.0.0\",\"type\":\"jpeg\",\"depend\":[]},{\"identify\":\"xxxxx\",\"moduleName\":\"moduleF\",\"remoteurl\":\"http://d.hiphotos.baidu.com/news/q%3D100/sign=a58d4fe6d909b3deedbfe068fcbe6cd3/1ad5ad6eddc451da7208e465befd5266d1163246.jpg\",\"version\":\"2.0.0\",\"type\":\"jpeg\",\"depend\":[]}]}";
+            data = [jsonStr dataUsingEncoding:NSUTF8StringEncoding];
             [weakSelf analyzeRemoteConfig:[NSJSONSerialization JSONObjectWithData:data options:0 error:nil]];
         }else
         {
             [weakSelf analyzeRemoteConfig:nil];
         }
-        @synchronized (self) {
+        @synchronized (weakSelf) {
             wrRefresh = NO;
         }
     }];
@@ -132,8 +133,10 @@ static BOOL debugOn = NO;
 
 -(void)analyzeRemoteConfig:(NSDictionary *)remoteConfigDict
 {
+    if (!remoteConfigDict) {
+        return;
+    }
     __weak typeof(moduleManager) weakModuleManager = moduleManager;
-    __weak typeof(netWorkManager) weakNetManager = netWorkManager;
     __weak typeof(self) weakSelf = self;
     //版本分析策略不上传本地资源由native自行判断,服务器下发统一的最新资源配置
     Log(@"analyzeModules begin");
@@ -222,7 +225,6 @@ static BOOL debugOn = NO;
 
 -(void)rescurseDepend:(Module *)md fileName:(NSString *)fileName complete:(void (^)(NSData *source, NSError *error))block;
 {
-    __weak typeof(self) weakSelf = self;
     __weak typeof(moduleManager) weakModuleManager = moduleManager;
     NSMutableArray *arrary = [NSMutableArray new];
     [self rescurseDepend:md arr:arrary];
@@ -267,7 +269,7 @@ static BOOL debugOn = NO;
                 int i=0;
                 for (NSDictionary *dict in tempArr) {
                     if ([[dict allKeys][0] isEqualToString:dep.remoteurl]) {
-                        int num = [dict[[dict allKeys][0]] integerValue];
+                        NSInteger num = [dict[[dict allKeys][0]] integerValue];
                         num++;
                         [tempArr replaceObjectAtIndex:i withObject:@{dep.remoteurl:@(num)}];
                     }
@@ -307,7 +309,6 @@ static BOOL debugOn = NO;
     Log(@"###########################################");
     Log(@"hookWithModules begin analyse moduels");
     __weak typeof(moduleManager) weakModuleManager = moduleManager;
-    __weak typeof(netWorkManager) weakNetManager = netWorkManager;
     NSMutableArray *array = [NSMutableArray new];
     for (Module *md in modules_) {
         Module *tmd = nil;
