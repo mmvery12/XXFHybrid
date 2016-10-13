@@ -308,18 +308,18 @@ static NSString *const TFolderPath = @"TFolderPath";
     CFRunLoopSourceRef source = CFRunLoopSourceCreate(kCFAllocatorDefault, 0, &context);
     CFRunLoopAddSource(cfRunloop, source, kCFRunLoopCommonModes);
     {
-        NSArray *temp = threadrunloops[@"afterModuleInit"];
-        NSMutableArray *array;
-        if (temp) {
-            array = [[NSMutableArray alloc] initWithArray:temp];
-        }else
-            array = [NSMutableArray new];
-        [array addObject:@{@"loop":(__bridge id)cfRunloop,@"src":(__bridge id)source}];
         @synchronized (threadrunloops) {
+            NSArray *temp = threadrunloops[@"afterModuleInit"];
+            NSMutableArray *array;
+            if (temp) {
+                array = [[NSMutableArray alloc] initWithArray:temp];
+            }else
+                array = [NSMutableArray new];
+            [array addObject:@{@"loop":(__bridge id)cfRunloop,@"src":(__bridge id)source}];
             [threadrunloops setObject:array forKey:@"afterModuleInit"];
         }
         while (!refreshFlag) {
-            CFRunLoopRun;
+            CFRunLoopRun();
         }
     }
     CFRunLoopRemoveSource(CFRunLoopGetCurrent(), source, kCFRunLoopCommonModes);
@@ -338,23 +338,26 @@ static NSString *const TFolderPath = @"TFolderPath";
 
     while (1) {
         BOOL inp = NO;
-        if ([self findModuleInProgress:module]) {
-            inp = YES;
-        }
-        NSArray *temp = threadrunloops[module.moduleName];
-        NSMutableArray *array;
-        if (temp) {
-            array = [[NSMutableArray alloc] initWithArray:temp];
-        }else
-            array = [NSMutableArray new];
-        [array addObject:@{@"loop":(__bridge id)cfRunloop,@"src":(__bridge id)source}];
         @synchronized (threadrunloops) {
+            if ([self findModuleInProgress:module]) {
+                inp = YES;
+            }
+            NSArray *temp = threadrunloops[module.moduleName];
+            NSMutableArray *array;
+            if (temp) {
+                array = [[NSMutableArray alloc] initWithArray:temp];
+            }else
+                array = [NSMutableArray new];
+            [array addObject:@{@"loop":(__bridge id)cfRunloop,@"src":(__bridge id)source}];
             [threadrunloops setObject:array forKey:module.moduleName];
         }
         if (inp) {
             CFRunLoopRun();
-        }else
+        }
+        if (!inp) {
             break;
+        }
+        
     }
     CFRunLoopRemoveSource(cfRunloop, source, kCFRunLoopCommonModes);
     CFRelease(source);
@@ -366,11 +369,11 @@ static NSString *const TFolderPath = @"TFolderPath";
 -(void)changeloop:(NSDictionary *)threadrunloops_ key:(NSString *)key;
 {
     if (!threadrunloops_) return;
-    for (NSDictionary *dict in threadrunloops_) {
-        CFRunLoopRef loop = (__bridge CFRunLoopRef)(dict[@"loop"]);
-        if (loop) CFRunLoopStop(loop);
-    }
     @synchronized (threadrunloops) {
+        for (NSDictionary *dict in threadrunloops_) {
+            CFRunLoopRef loop = (__bridge CFRunLoopRef)(dict[@"loop"]);
+            if (loop) CFRunLoopStop(loop);
+        }
         [threadrunloops removeObjectForKey:key];
     }
 }

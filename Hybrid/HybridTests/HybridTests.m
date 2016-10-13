@@ -58,15 +58,15 @@
     
 }
 
--(void)testUseResult1
+-(void)testAnsyce
 {
-    XCTestExpectation *exp = [self expectationWithDescription:@"a2"];
+    XCTestExpectation *exp = [self expectationWithDescription:@"这是异步测试"];
     [HyBridManager StartWithLog:YES];
     [HyBridManager UseResourceWithURI:@"moduleA/logo.png" complete:^(NSData *source, NSError *error) {
         [exp fulfill];
     }];
     [self waitForExpectationsWithTimeout:2 handler:^(NSError * _Nullable error) {
-        NSLog(@"a");
+        NSLog(@"异步执行失败");
     }];
 }
 
