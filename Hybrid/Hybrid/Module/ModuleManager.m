@@ -55,7 +55,9 @@ static NSString *const TFolderPath = @"TFolderPath";
 
 -(NSArray <Module *>*)modulesFromeDictionary:(NSDictionary *)dict
 {
+    Log(@"[系统任务]正在反析配置文件，生成字典");
     if (!dict) {
+        Log(@"[系统任务]正在反析配置文件失败");
         return nil;
     }
     NSMutableArray *arr = [NSMutableArray new];
@@ -69,6 +71,7 @@ static NSString *const TFolderPath = @"TFolderPath";
         module.depend = tdict[@"depend"];
         [arr addObject:module];
     }
+    Log(@"[系统任务]分析配置文件成功");
     return arr;
 }
 
@@ -118,7 +121,7 @@ static NSString *const TFolderPath = @"TFolderPath";
                 NSString *fileName = [[md.remoteurl componentsSeparatedByString:@"/"] lastObject];
                 NSString *tpath = [NSString stringWithFormat:@"%@/%@",[self tcachePath],md.moduleName];
                 NSString *filefullpath = [NSString stringWithFormat:@"%@/%@",tpath,fileName];
-                [self storageModule:md data:[NSData dataWithContentsOfFile:filefullpath]];
+                [self storageModule:md data:[NSData dataWithContentsOfFile:filefullpath] system:1 complete:nil];
             }
             {
                 @synchronized (self) {
@@ -128,7 +131,9 @@ static NSString *const TFolderPath = @"TFolderPath";
                     archiveCarPriceData = nil;
                 }
             }
-        }
+            Log(@"[系统任务]配置文件中：\r\n 需要不更新的module：\r\n %@ \r\n 需要更新的module \r\n %@ \r\n 需要转移或解压的文件: \r\n %@ \r\n",normal,needUpdate,needArchive);
+        }else
+            Log(@"[系统任务]配置文件为空");
     
         for (Module *md in needUpdate) {
             md.status = ModuleStatusNone;
@@ -173,10 +178,26 @@ static NSString *const TFolderPath = @"TFolderPath";
 
 -(NSData *)findDataWithModuleName:(NSString *)moduleName fileName:(NSString *)fileName;
 {
+    return [self findDataInCacheWithModuleName:moduleName fileName:fileName];
+}
+
+-(NSData *)findDataInCacheWithModuleName:(NSString *)moduleName fileName:(NSString *)fileName;
+{
     if (![fileName isKindOfClass:[NSString class]]) {
         return nil;
     }
     NSString *cachePath = [self cachePath];
+    NSString *path = nil;
+    path = [NSString stringWithFormat:@"%@/%@/%@",cachePath,moduleName,fileName];
+    return [self findSourceAtRelativePath:path];
+}
+
+-(NSData *)findDataInTempWithModuleName:(NSString *)moduleName fileName:(NSString *)fileName;
+{
+    if (![fileName isKindOfClass:[NSString class]]) {
+        return nil;
+    }
+    NSString *cachePath = [self tcachePath];
     NSString *path = nil;
     path = [NSString stringWithFormat:@"%@/%@/%@",cachePath,moduleName,fileName];
     return [self findSourceAtRelativePath:path];
@@ -187,8 +208,13 @@ static NSString *const TFolderPath = @"TFolderPath";
     return [NSData dataWithContentsOfFile:path];
 }
 
--(BOOL)storageModule:(Module *)module data:(NSData *)data;
+-(BOOL)storageModule:(Module *)module data:(NSData *)data system:(BOOL)system complete:(dispatch_block_t)complete
 {
+    NSString *str = nil;
+    if (system) {
+        str = @"[系统任务]";
+    }else
+        str = @"[用户任务]";
     BOOL success = NO;
     if (!data || !module) {
         if (module) module.status = ModuleStatusNone;
@@ -201,10 +227,14 @@ static NSString *const TFolderPath = @"TFolderPath";
         [self createpath:tpath];
         NSError *error;
         NSString *filefullpath = [NSString stringWithFormat:@"%@/%@",tpath,fileName];
-        BOOL success = [data writeToFile:filefullpath atomically:YES];
+        success = [data writeToFile:filefullpath atomically:YES];
+        Log(@"%@将module写入缓存文件夹开始",str);
         if (success) {
+            Log(@"%@将module写入缓存文件夹结束",str);
+            Log(@"%@当前module类型为普通文件，开始写入保存文件夹",str);
             module.status = ModuleStatusNeedArchize;
             if ([needArchiveType containsObject:module.type]) {//zip解压
+                Log(@"%@当前module类型为zip/rar文件，开始解压",str);
                 NSString *fileSotrePath = [NSString stringWithFormat:@"%@/%@",tpath,module.moduleName];
                 if ([fileManager fileExistsAtPath:fileSotrePath]) {
                     [fileManager removeItemAtPath:fileSotrePath error:&error];
@@ -214,25 +244,38 @@ static NSString *const TFolderPath = @"TFolderPath";
                 if (error) {//
                     module.status = ModuleStatusNone;
                     success = NO;
+                    Log(@"%@解压zip失败 %@",str,error);
                 }else
                 {
+                    Log(@"%@module解压成功，开始写入文件夹",str);
                     if ([fileManager fileExistsAtPath:epath]) {
                         [fileManager removeItemAtPath:epath error:&error];
                     }
                     success = [fileManager moveItemAtPath:fileSotrePath toPath:epath error:&error];
                     module.status = success?ModuleStatusReady:ModuleStatusNone;
+                    if (success) {
+                        Log(@"%@module写入文件夹成功",str);
+                    }else
+                        Log(@"%@module写入文件夹失败",str);
                 }
             }else
             {//普通data写入
+                Log(@"%@当前module类型为普通文件，开始写入保存文件夹",str);
                 if ([fileManager fileExistsAtPath:epath]) {
                     [fileManager removeItemAtPath:epath error:&error];
                 }
                 success = [fileManager moveItemAtPath:tpath toPath:epath error:&error];
-                module.status = ModuleStatusReady;
+                module.status = success?ModuleStatusReady:ModuleStatusNone;
+                if (success) {
+                    Log(@"%@module写入文件夹成功",str);
+                }else
+                    Log(@"%@module写入文件夹失败",str);
             }
+            Log(@"%@移除缓存文件",str);
             [fileManager removeItemAtPath:filefullpath error:&error];//移掉缓存文件
         }else
         {
+            Log(@"%@将module写入缓存文件夹失败",str);
             module.status = ModuleStatusNone;
         }
         Module *tempMoule = [self findModuleWithModuleName:module.moduleName];
@@ -241,16 +284,30 @@ static NSString *const TFolderPath = @"TFolderPath";
             NSData *archiveCarPriceData = [NSKeyedArchiver archivedDataWithRootObject:modules];
             [[NSUserDefaults standardUserDefaults] setObject:archiveCarPriceData forKey:@"modules"];
             [[NSUserDefaults standardUserDefaults] synchronize];
+            Log(@"%@保存modules信息到本地",str);
         }
         [self delModuleInProgress:module];
+    }
+    [self storageModulelog:success];
+    if (complete) {
+        complete();
     }
     [self changeloop:threadrunloops[module.moduleName] key:module.moduleName];
     return success;
 }
 
+-(void)storageModulelog:(BOOL)success
+{
+        if (success) {
+            Log(@"存储成功");
+        }else
+            Log(@"存储失败");
+}
+
 -(void)deleteModule:(Module *)module_
 {
     [fileManager removeItemAtPath:[NSString stringWithFormat:@"%@/%@",[self cachePath],module_.moduleName] error:nil];
+    [fileManager removeItemAtPath:[NSString stringWithFormat:@"%@/%@",[self tcachePath],module_.moduleName] error:nil];
 }
 
 -(void)deleteContentsWithOutModules:(NSArray <Module *>*)modules_
@@ -298,11 +355,16 @@ static NSString *const TFolderPath = @"TFolderPath";
 -(ModuleStatus)isModuleReady:(Module *)module;
 {
     [self modulesInProcess:module];
+    if (![self findDataInTempWithModuleName:module.moduleName fileName:[module.remoteurl lastPathComponent]] && ![self findDataInCacheWithModuleName:module.moduleName fileName:[module.remoteurl lastPathComponent]]) {
+        module.status = ModuleStatusNone;
+    }
     return module.status;
 }
 
 -(void)afterModuleInit:(dispatch_block_t)block;
 {
+    
+    
     CFRunLoopRef cfRunloop = CFRunLoopGetCurrent();
     CFRunLoopSourceContext context = {0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL};
     CFRunLoopSourceRef source = CFRunLoopSourceCreate(kCFAllocatorDefault, 0, &context);
@@ -318,7 +380,9 @@ static NSString *const TFolderPath = @"TFolderPath";
             [array addObject:@{@"loop":(__bridge id)cfRunloop,@"src":(__bridge id)source}];
             [threadrunloops setObject:array forKey:@"afterModuleInit"];
         }
+        
         while (!refreshFlag) {
+            [self afterModuleInitlog];
             CFRunLoopRun();
         }
     }
@@ -327,6 +391,12 @@ static NSString *const TFolderPath = @"TFolderPath";
     if (block) block();
 }
 
+-(void)afterModuleInitlog
+{
+    if (!refreshFlag) {
+        Log(@"[用户任务->挂起]配置文件更新未完成,等待更新配置文件");
+    }
+}
 
 -(BOOL)modulesInProcess:(Module *)module
 {
@@ -351,13 +421,13 @@ static NSString *const TFolderPath = @"TFolderPath";
             [array addObject:@{@"loop":(__bridge id)cfRunloop,@"src":(__bridge id)source}];
             [threadrunloops setObject:array forKey:module.moduleName];
         }
+        [self modulesInProcesslog:inp];
         if (inp) {
             CFRunLoopRun();
         }
         if (!inp) {
             break;
         }
-        
     }
     CFRunLoopRemoveSource(cfRunloop, source, kCFRunLoopCommonModes);
     CFRelease(source);
@@ -365,6 +435,13 @@ static NSString *const TFolderPath = @"TFolderPath";
 }
 
 
+-(void)modulesInProcesslog:(BOOL)inp
+{
+    
+        if (inp) {
+            Log(@"module 正在下载，等待中");
+        }
+}
 
 -(void)changeloop:(NSDictionary *)threadrunloops_ key:(NSString *)key;
 {

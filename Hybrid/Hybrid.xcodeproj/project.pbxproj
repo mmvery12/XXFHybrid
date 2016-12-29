@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		691A42E91DBF394600DA322E /* Hybrid.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 69F2E7A71D90EC5D00603610 /* Hybrid.framework */; };
 		6962ECFA1DAB98860019D50C /* Config.json in Resources */ = {isa = PBXBuildFile; fileRef = 6962ECF81DAB98860019D50C /* Config.json */; };
 		6962ECFB1DAB98860019D50C /* URL.json in Resources */ = {isa = PBXBuildFile; fileRef = 6962ECF91DAB98860019D50C /* URL.json */; };
 		699179E11D91106C00DD0A05 /* HyBridManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 699179CF1D91106C00DD0A05 /* HyBridManager.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -25,7 +26,6 @@
 		69917A081D92278D00DD0A05 /* Zip.m in Sources */ = {isa = PBXBuildFile; fileRef = 69917A011D92278D00DD0A05 /* Zip.m */; };
 		69AA55A91D990E1400B917EC /* CommFormatConfig.h in Headers */ = {isa = PBXBuildFile; fileRef = 69AA55A81D990E1400B917EC /* CommFormatConfig.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		69AA55AE1D9A02A200B917EC /* ZipArchive.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 69AA55AD1D9A02A200B917EC /* ZipArchive.framework */; };
-		69F2E7B21D90EC5D00603610 /* Hybrid.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 69F2E7A71D90EC5D00603610 /* Hybrid.framework */; };
 		69F2E7B71D90EC5D00603610 /* HybridTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 69F2E7B61D90EC5D00603610 /* HybridTests.m */; };
 /* End PBXBuildFile section */
 
@@ -58,6 +58,7 @@
 		69917A011D92278D00DD0A05 /* Zip.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Zip.m; sourceTree = "<group>"; };
 		69AA55A81D990E1400B917EC /* CommFormatConfig.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CommFormatConfig.h; sourceTree = "<group>"; };
 		69AA55AD1D9A02A200B917EC /* ZipArchive.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ZipArchive.framework; path = "../SSZipArchive/build/Debug-iphoneos/ZipArchive.framework"; sourceTree = "<group>"; };
+		69ED71BB1E13C47F00E88CEB /* PrefixHeader.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PrefixHeader.pch; sourceTree = "<group>"; };
 		69F2E7A71D90EC5D00603610 /* Hybrid.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Hybrid.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		69F2E7B11D90EC5D00603610 /* HybridTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = HybridTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		69F2E7B61D90EC5D00603610 /* HybridTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = HybridTests.m; sourceTree = "<group>"; };
@@ -77,7 +78,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				69F2E7B21D90EC5D00603610 /* Hybrid.framework in Frameworks */,
+				691A42E91DBF394600DA322E /* Hybrid.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -117,6 +118,7 @@
 			children = (
 				699179D51D91106C00DD0A05 /* Hybrid.h */,
 				699179D61D91106C00DD0A05 /* Info.plist */,
+				69ED71BB1E13C47F00E88CEB /* PrefixHeader.pch */,
 			);
 			path = Source;
 			sourceTree = "<group>";
@@ -418,6 +420,8 @@
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = Hybrid/Source/PrefixHeader.pch;
 				INFOPLIST_FILE = "$(SRCROOT)/Hybrid/Source/Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
@@ -436,6 +440,8 @@
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = Hybrid/Source/PrefixHeader.pch;
 				INFOPLIST_FILE = "$(SRCROOT)/Hybrid/Source/Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;

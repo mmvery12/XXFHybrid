@@ -102,12 +102,12 @@
     }
 }
 
--(void)addTasks:(NSArray <NSString *> *)urlStrs moduleComplete:(void (^)(NSString *url,NSData *data,NSError *error))oneblock allcomplete:(void (^)(void))block;
+-(void)addTasks:(NSArray <NSString *> *)urlStrs moduleComplete:(void (^)(BOOL allcomplete,NSString *url,NSData *data,NSError *error))oneblock;
 {
     NSString *tag = [NSString stringWithFormat:@"%lld",[[NSDate date] timeIntervalSince1970]];
     if (![urlStrs isKindOfClass:[NSArray class]] ||
         urlStrs.count==0) {
-        if (block) block();
+        oneblock(NO,nil,nil,[NSError errorWithDomain:@"" code:-1009 userInfo:nil]);
     }
     NSMutableArray *temp = [NSMutableArray new];
     for (NSString *url in urlStrs) {
@@ -120,14 +120,15 @@
     __weak typeof(tasksCheckTag) weaktasksCheckTag = tasksCheckTag;
     for (NSString *url in temp) {
         [self addTask:url complete:^(NSData *data, NSError *error) {
-            if (oneblock)
-                oneblock(url,data,error);
             @synchronized (weaktasksCheckTag) {
                 [[weaktasksCheckTag objectForKey:tag] removeObject:url];
             }
-            if ([weakSelf isAllTaskFinishWithTag:tag] && block) {
-                block();
+            BOOL allcomplete = NO;
+            if ([weakSelf isAllTaskFinishWithTag:tag]) {
+                allcomplete = YES;
             }
+            if (oneblock)
+                oneblock(allcomplete,url,data,error);
         }];
     }
 }

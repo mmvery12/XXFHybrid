@@ -16,13 +16,20 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
     UIWebView *webview = [[UIWebView alloc] initWithFrame:self.view.bounds];
     [self.view addSubview:webview];
     [webview loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:@"http://www.baidu.com"]]];
     webview.delegate = self;
     webview.alpha = 0;
     [self btntap:nil];
+    
+    UILabel *label = [UILabel new];
+    label.text = @"123";
+    label.font = [UIFont systemFontOfSize:60];
+    label.frame = CGRectMake(30, 100, 60, 40);
+    [self.view addSubview:label];
+    label.textColor = [UIColor blackColor];
+    label.backgroundColor = [UIColor blueColor];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -53,7 +60,7 @@
 - (void)webViewDidFinishLoad:(UIWebView *)webView;
 {
 }
-- (void)webView:(UIWebView *)webView didFailLoadWithError:(nullable NSError *)error;
+- (void)webView:(UIWebView *)webView didFailLoadWithError:(NSError *)error;
 {
 }
 

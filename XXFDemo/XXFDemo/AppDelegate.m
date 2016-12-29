@@ -19,7 +19,7 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     // Override point for customization after application launch.
-    [HyBridManager StartWithLog:YES];
+    [HyBridManager StartWithLog:YES remoteConfig:@"http://7nj1i4.com1.z0.glb.clouddn.com/Config.json"];
     return YES;
 }
 

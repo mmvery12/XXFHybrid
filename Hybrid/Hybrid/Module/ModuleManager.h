@@ -24,7 +24,7 @@ static NSString *const EFolderPath = @"EFolderPath";
 //返回指定module名、文件名对应的数据
 -(NSData *)findDataWithModuleName:(NSString *)moduleName fileName:(NSString *)fileName;
 //请勿在主线程执行次函数，有写文件操作
--(BOOL)storageModule:(Module *)module data:(NSData *)data;
+-(BOOL)storageModule:(Module *)module data:(NSData *)data system:(BOOL)system complete:(dispatch_block_t)complete;
 //判断module是否可用
 -(ModuleStatus)isModuleReady:(Module *)module;
 //module确定后才能执行交互操作，不然module中找不到对应的module

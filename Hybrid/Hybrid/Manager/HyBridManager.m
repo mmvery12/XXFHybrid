@@ -13,17 +13,18 @@
 #import <objc/runtime.h>
 #import "Module.h"
 
-static BOOL debugOn = NO;
+//static BOOL debugOn = NO;
 
-#define Log( s, ... ) !debugOn?:NSLog( @"%@", [NSString stringWithFormat:(s), ##__VA_ARGS__])
+
 
 @interface HyBridManager ()
 {
     ModuleManager *moduleManager;
     NetWorkManager *netWorkManager;
     NSTimer *timer;
-    
+    NSString *remoteConfigUrl;
     BOOL isrefresh;
+    dispatch_queue_t myqueue;
 }
 @end
 
@@ -31,12 +32,13 @@ static BOOL debugOn = NO;
 
 -(void)UIApplicationDidEnterBackgroundNotification
 {
-    Log(@"UIApplicationDidEnterBackgroundNotification timer end");
+    Log(@"[系统任务]轮训解释");
     [self timerEnd];
 }
+
 -(void)UIApplicationDidBecomeActiveNotification
 {
-    Log(@"UIApplicationDidBecomeActiveNotification timer begin");
+    Log(@"[系统任务]轮训开始");
     [self timerBegin];
 }
 
@@ -69,6 +71,7 @@ static BOOL debugOn = NO;
 {
     self = [super init];
     if (self) {
+        myqueue = dispatch_queue_create("com.hybrid", DISPATCH_CURRENT_QUEUE_LABEL);
         moduleManager = [ModuleManager new];
         netWorkManager = [NetWorkManager new];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(UIApplicationDidEnterBackgroundNotification) name:UIApplicationDidEnterBackgroundNotification object:nil];
@@ -78,10 +81,13 @@ static BOOL debugOn = NO;
     return self;
 }
 
-+(void)StartWithLog:(BOOL)log;
++(void)StartWithLog:(BOOL)log remoteConfig:(NSString *)configurl
 {
-    debugOn = log;
-    [[HyBridManager Manager] start];
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        debugOn = log;
+        [[HyBridManager Manager] startremoteConfig:configurl];
+    });
 }
 
 +(BOOL)HandleWebViewURL:(NSURL *)url CommExcWebView:(id)webview CommExcResult:(void (^)(NSString *jsMethodName,NSString *jsIdentify,id jsParams))reslut
@@ -99,11 +105,19 @@ static BOOL debugOn = NO;
     [[HyBridManager Manager] useResourceWithModuleName:name fileName:fileName complete:block];
 }
 
+-(void)startremoteConfig:(NSString *)configurl
+{
+    remoteConfigUrl = configurl;
+    [self start];
+}
+
 -(void)start
 {
-    if (![moduleManager isProgressRuning] && !isrefresh) {
-        [self remoteChecking];//远程下发服务
-    }
+    dispatch_async(myqueue, ^{
+        if (![moduleManager isProgressRuning] && !isrefresh) {
+            [self remoteChecking];//远程下发服务
+        }
+    });
 }
 
 -(void)remoteChecking
@@ -113,15 +127,15 @@ static BOOL debugOn = NO;
     @synchronized (self) {
         wrRefresh = YES;
     }
-    Log(@"remoteChecking begin");
-    [netWorkManager addTask:@"http://www.baidu.com" params:nil complete:^(NSData *data, NSError *error) {
-        Log(@"remoteChecking end");
+    NSAssert(remoteConfigUrl!=nil, @"remoteConfigUrl is nil");
+    Log(@"[系统任务]开始获取远程配置");
+    [netWorkManager addTask:remoteConfigUrl params:nil complete:^(NSData *data, NSError *error) {
+        Log(@"[系统任务]远程配置获取成功");
         if (!error) {
-            NSString *jsonStr = @"{\"modules\":[{\"identify\":\"xxxxx\",\"moduleName\":\"moduleA\",\"remoteurl\":\"http://source.jd.com/resource/img/logo.png\",\"version\":\"4.0.0\",\"type\":\"png\",\"depend\":[\"moduleC\",\"moduleB\"]},{\"identify\":\" xxxxx\",\"moduleName\":\"moduleB\",\"remoteurl\":\"http://img14.360buyimg.com/cms/jfs/t3163/365/2516901468/167838/6549aff2/57e24d21N624f138b.jpg\",\"version\":\"1.0.0\",\"type\":\"zip\",\"depend\":[\"moduleD\"]},{\"identify\":\"xxxxx\",\"moduleName\":\"moduleC\",\"remoteurl\":\"http://img30.360buyimg.com/jdwork/jfs/t3214/136/2299661031/96531/df1830e4/57df4683N659a9803.png\",\"version\":\"1.0.0\",\"type\":\"jpeg\",\"depend\":[]},{\"identify\":\"xxxxx\",\"moduleName\":\"moduleD\",\"remoteurl\":\"http://img30.360buyimg.com/jdwork/jfs/t3295/328/2378959747/209593/a102beca/57e0e8eeN6e03ada9.jpg\",\"version\":\"2.0.0\",\"type\":\"jpeg\",\"depend\":[\"moduleA\"]},{\"identify\":\" xxxxx\",\"moduleName\":\"moduleE\",\"remoteurl\":\"http://a.hiphotos.baidu.com/news/q%3D100/sign=7010b4832e9759ee4c5064cb82f9434e/5243fbf2b2119313c8942f3e6d380cd790238d6d.jpg\",\"version\":\"2.0.0\",\"type\":\"jpeg\",\"depend\":[]},{\"identify\":\"xxxxx\",\"moduleName\":\"moduleF\",\"remoteurl\":\"http://d.hiphotos.baidu.com/news/q%3D100/sign=a58d4fe6d909b3deedbfe068fcbe6cd3/1ad5ad6eddc451da7208e465befd5266d1163246.jpg\",\"version\":\"2.0.0\",\"type\":\"jpeg\",\"depend\":[]}]}";
-            data = [jsonStr dataUsingEncoding:NSUTF8StringEncoding];
             [weakSelf analyzeRemoteConfig:[NSJSONSerialization JSONObjectWithData:data options:0 error:nil]];
         }else
         {
+            Log(@"[系统任务]远程配置获取失败");
             [weakSelf analyzeRemoteConfig:nil];
         }
         @synchronized (weakSelf) {
@@ -139,13 +153,13 @@ static BOOL debugOn = NO;
     __weak typeof(moduleManager) weakModuleManager = moduleManager;
     __weak typeof(self) weakSelf = self;
     //版本分析策略不上传本地资源由native自行判断,服务器下发统一的最新资源配置
-    Log(@"analyzeModules begin");
+    Log(@"[系统任务]开始分析配置文件");
     [moduleManager analyzeModules:[weakModuleManager modulesFromeDictionary:remoteConfigDict] result:^(NSArray<Module *> *modules) {
-        Log(@"analyzeModules end");
+        Log(@"[系统任务]配置文件检查完成，下面进入下载流程");
         //    modules =  [self sortModulesSequence:modules];//    计算各个模块权重
         [weakSelf hookWithModules:modules result:^{
-            Log(@"all allcomplete analyzeRemoteConfig");
-        }];
+            Log(@"***********[系统任务]一次完整的更新配置文件，更新modules完成************");
+        } system:YES];
     }];
 }
 
@@ -186,16 +200,19 @@ static BOOL debugOn = NO;
 -(void)useResourceWithURI:(NSString *)uri complete:(void (^)(NSData *source, NSError *error))block;
 {
     __weak typeof(moduleManager) weakmoduleManager = moduleManager;
-    dispatch_async(dispatch_get_global_queue(0, 0), ^{
+    dispatch_async(myqueue, ^{
         [weakmoduleManager afterModuleInit:^{
             NSData *data = [weakmoduleManager findSourceAtRelativePath:uri];
             if (data) {
                 dispatch_async(dispatch_get_main_queue(), ^{
-                        block(data,nil);
+                    Log(@"根据URI获取资源成功");
+                    block(data,nil);
                 });
+                
             }else
             {
                 dispatch_async(dispatch_get_main_queue(), ^{
+                    Log(@"根据URI获取资源失败");
                     block(nil,[NSError errorWithDomain:@"NSERROR_SOURCENOTFOUND_DOMAIN" code:-100 userInfo:@{NSLocalizedDescriptionKey:[NSString stringWithFormat:@"URI:%@ ; not found",uri]}]);
                 });
             }
@@ -208,13 +225,14 @@ static BOOL debugOn = NO;
 {
     __weak typeof(moduleManager) weakmoduleManager = moduleManager;
     __weak typeof(self) weakSelf = self;
-    dispatch_async(dispatch_get_global_queue(0, 0), ^{
-        Log(@"afterModuleInit begin");
+    dispatch_async(myqueue, ^{
+        Log(@"[用户任务]查看module配置是否下载完成");
         [weakmoduleManager afterModuleInit:^{
-            Log(@"afterModuleInit end");
+            Log(@"[用户任务]module配置已完成");
             Module *md = [weakmoduleManager findModuleWithModuleName:name];
             if (!md) {
                 dispatch_async(dispatch_get_main_queue(), ^{
+                    Log(@"[用户任务]module未找到");
                     block(nil,[NSError errorWithDomain:@"NSERROR_MODULENOTFOUND_DOMAIN" code:-100 userInfo:@{NSLocalizedDescriptionKey:[NSString stringWithFormat:@"MODULE:%@ ; not found",name]}]);
                 });
             }
@@ -231,13 +249,13 @@ static BOOL debugOn = NO;
     [self hookWithModules:arrary result:^{
         dispatch_async(dispatch_get_main_queue(), ^{
             NSData *tdata = [weakModuleManager findDataWithModuleName:md.moduleName fileName:fileName];
-            Log(@"useResourceWithXX data output status %d",tdata?1:0);
+            Log(@"[用户任务->目标]获取资源 %@",tdata?@"成功":@"失败");
             if (tdata) {
                 block(tdata,nil);
             }else
                 block(nil,[NSError errorWithDomain:@"NSERROR_MODULENOTFOUND_DOMAIN" code:-100 userInfo:@{NSLocalizedDescriptionKey:[NSString stringWithFormat:@"MODULE:%@ FILE SOURCE:%@ ; not found",md.moduleName,fileName]}]);
         });
-    }];
+    } system:NO];
 }
 
 -(void)rescurseDepend:(Module *)md arr:(NSMutableArray *)arr;
@@ -304,10 +322,9 @@ static BOOL debugOn = NO;
  module在 moduleManager isModuleReady：方法中会询问是否需要等待，等待的话就表示此module在workflow中
  网络请求即开启workflow，将moduel加入到相应的监视队列，写文件结束workflow结束，将module从监视队列移除，并通知moduleManager isModuleReady：方法，继续执行
  ************/
--(void)hookWithModules:(NSArray <Module *> *)modules_ result:(void (^)(void))resultblock
+-(void)hookWithModules:(NSArray <Module *> *)modules_ result:(void (^)(void))resultblock system:(BOOL)system
 {
-    Log(@"###########################################");
-    Log(@"hookWithModules begin analyse moduels");
+    Log(system?@"[系统任务]开始分析需下载modules":@"[用户任务]开始分析需下载modules");
     __weak typeof(moduleManager) weakModuleManager = moduleManager;
     NSMutableArray *array = [NSMutableArray new];
     for (Module *md in modules_) {
@@ -323,18 +340,32 @@ static BOOL debugOn = NO;
     }
     if (array.count==0) {
         array = nil;
-        Log(@"hookWithModules moduels are all ready");
-        Log(@"hookWithModules moduels end analyse moduels");
-        Log(@"===========================================");
+        Log(system?@"[系统任务]未发现需要下载的modules":@"[用户任务]未发现需要下载的modules");
+        Log(system?@"[系统任务]分析需下载modules完成":@"[用户任务]分析需下载modules完成");
         resultblock();
         return;
     }
-    Log(@"hookWithModules will down load %@",array);
-    [netWorkManager addTasks:array moduleComplete:^(NSString *url, NSData *data, NSError *error) {
-        Module *module = [weakModuleManager findModuleWithRemoteUrl:url];
-        Log(@"---->storageModule %@ %@",module.type,module.remoteurl);
-        [weakModuleManager storageModule:module data:data];
-    } allcomplete:resultblock];
+    NSString *str = nil;
+    if (system) {
+        str = @"[系统任务]";
+    }else
+        str = @"[用户任务]";
+    
+    Log(@"%@开始下载的modules url链接 %@",str,array);
+    [netWorkManager addTasks:array moduleComplete:^(BOOL allcomplete, NSString *url, NSData *data, NSError *error) {
+        if ((data==nil || data.length==0) && error) {
+            Log(system?@"[系统任务]下载失败":@"[用户任务]下载失败");
+        }else
+        {
+            Module *module = [weakModuleManager findModuleWithRemoteUrl:url];
+            Log(@"%@下载成功,开始存储module:%@ %@ %@",str,module.moduleName,module.type,module.remoteurl);
+            [weakModuleManager storageModule:module data:data system:system complete:^{
+                if (allcomplete && resultblock) {
+                    resultblock();
+                }
+            }];
+        }
+    }];
 }
 
 @end

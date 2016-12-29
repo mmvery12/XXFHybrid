@@ -1,0 +1,16 @@
+//
+//  PrefixHeader.pch
+//  Hybrid
+//
+//  Created by JD on 16/12/28.
+//  Copyright © 2016年 YC.L. All rights reserved.
+//
+
+#ifndef PrefixHeader_pch
+#define PrefixHeader_pch
+#import "Hybrid.h"
+#define Log( s, ... ) !debugOn?:NSLog( @"%@", [NSString stringWithFormat:(s), ##__VA_ARGS__])
+// Include any system framework and library headers here that should be included in all compilation units.
+// You will also need to set the Prefix Header build setting of one or more of your targets to reference this file.
+
+#endif /* PrefixHeader_pch */
