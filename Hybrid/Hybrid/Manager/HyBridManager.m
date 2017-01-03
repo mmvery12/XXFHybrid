@@ -85,7 +85,7 @@
 {
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        debugOn = log;
+        [LogDebug SetLogDebug:log];
         [[HyBridManager Manager] startremoteConfig:configurl];
     });
 }

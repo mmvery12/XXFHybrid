@@ -27,6 +27,8 @@
 		69AA55A91D990E1400B917EC /* CommFormatConfig.h in Headers */ = {isa = PBXBuildFile; fileRef = 69AA55A81D990E1400B917EC /* CommFormatConfig.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		69AA55AE1D9A02A200B917EC /* ZipArchive.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 69AA55AD1D9A02A200B917EC /* ZipArchive.framework */; };
 		69F2E7B71D90EC5D00603610 /* HybridTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 69F2E7B61D90EC5D00603610 /* HybridTests.m */; };
+		69FC24FE1E1B3CB5008A41CD /* LogDebug.h in Headers */ = {isa = PBXBuildFile; fileRef = 69FC24FC1E1B3CB5008A41CD /* LogDebug.h */; };
+		69FC24FF1E1B3CB5008A41CD /* LogDebug.m in Sources */ = {isa = PBXBuildFile; fileRef = 69FC24FD1E1B3CB5008A41CD /* LogDebug.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -63,6 +65,8 @@
 		69F2E7B11D90EC5D00603610 /* HybridTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = HybridTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		69F2E7B61D90EC5D00603610 /* HybridTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = HybridTests.m; sourceTree = "<group>"; };
 		69F2E7B81D90EC5D00603610 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		69FC24FC1E1B3CB5008A41CD /* LogDebug.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LogDebug.h; sourceTree = "<group>"; };
+		69FC24FD1E1B3CB5008A41CD /* LogDebug.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LogDebug.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -119,6 +123,8 @@
 				699179D51D91106C00DD0A05 /* Hybrid.h */,
 				699179D61D91106C00DD0A05 /* Info.plist */,
 				69ED71BB1E13C47F00E88CEB /* PrefixHeader.pch */,
+				69FC24FC1E1B3CB5008A41CD /* LogDebug.h */,
+				69FC24FD1E1B3CB5008A41CD /* LogDebug.m */,
 			);
 			path = Source;
 			sourceTree = "<group>";
@@ -190,6 +196,7 @@
 				699179E51D91106C00DD0A05 /* Hybrid.h in Headers */,
 				69917A021D92278D00DD0A05 /* ModuleManager.h in Headers */,
 				699179E31D91106C00DD0A05 /* NetWorkManager.h in Headers */,
+				69FC24FE1E1B3CB5008A41CD /* LogDebug.h in Headers */,
 				69917A051D92278D00DD0A05 /* Module.h in Headers */,
 				69917A071D92278D00DD0A05 /* Zip.h in Headers */,
 				699179E91D91108700DD0A05 /* Comm.h in Headers */,
@@ -296,6 +303,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				69917A081D92278D00DD0A05 /* Zip.m in Sources */,
+				69FC24FF1E1B3CB5008A41CD /* LogDebug.m in Sources */,
 				699179E41D91106C00DD0A05 /* NetWorkManager.m in Sources */,
 				699179EA1D91108700DD0A05 /* Comm.m in Sources */,
 				69917A061D92278D00DD0A05 /* Module.m in Sources */,

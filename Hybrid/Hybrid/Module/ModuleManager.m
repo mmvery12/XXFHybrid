@@ -394,7 +394,7 @@ static NSString *const TFolderPath = @"TFolderPath";
 -(void)afterModuleInitlog
 {
     if (!refreshFlag) {
-        Log(@"[用户任务->挂起]配置文件更新未完成,等待更新配置文件");
+        Log(@"[挂起->用户任务]配置文件更新未完成,等待更新配置文件");
     }
 }
 
