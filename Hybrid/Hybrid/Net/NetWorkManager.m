@@ -8,11 +8,13 @@
 
 #import "NetWorkManager.h"
 #import <objc/runtime.h>
-@interface NetWorkManager ()
+@interface NetWorkManager ()<NSURLSessionDelegate>
 {
     NSOperationQueue *queue;
+    NSOperationQueue *sessionqueue;
     NSMutableDictionary *operDict;
     NSMutableDictionary *tasksCheckTag;
+    NSURLSession *session;
 }
 @end
 
@@ -22,8 +24,10 @@
     self = [super init];
     if (self) {
         queue = [[NSOperationQueue alloc] init];
+        sessionqueue = [[NSOperationQueue alloc] init];
         operDict = [NSMutableDictionary new];
         tasksCheckTag = [NSMutableDictionary new];
+        [self configSession];
     }
     return self;
 }
@@ -53,8 +57,8 @@
     [inv setArgument:&data atIndex:3];
     int i= 0;
     [inv setArgument:&i atIndex:4];
-    NSInvocationOperation *inoper = [[NSInvocationOperation alloc] initWithInvocation:inv];
     
+    NSInvocationOperation *inoper = [[NSInvocationOperation alloc] initWithInvocation:inv];
     tempdict = [NSMutableDictionary new];
     temparr = [NSMutableArray new];
     [temparr addObject:block];
@@ -62,14 +66,14 @@
     @synchronized (operDict) {
         [operDict setObject:tempdict forKey:urlStr];
     }
-    [queue addOperation:inoper];
-    
+    [queue addOperation:inoper];//改成http1.2 这里用queue太鸡肋了，oper里面是个block，完全不能体现queue的价值
 }
 
--(void)download:(NSString *)url params:(NSData *)data count:(NSInteger)count;
+-(void)download:(NSString *)url params:(NSData *)data count:(NSInteger)tcount;
 {
+    __block NSInteger mcount = tcount;
     //尝试3次，3次后返回下载错误
-    if (count==3) {
+    if (mcount==3) {
         NSArray *tempArr = [NSArray arrayWithArray:[operDict objectForKey:url][@"blocks"]];
         @synchronized (operDict) {
             [operDict removeObjectForKey:url];
@@ -86,20 +90,23 @@
     request.HTTPMethod = @"POST";
     NSURLResponse *response;
     NSError *error;
-    NSData *receivedata = [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:&error];
-    if (receivedata && !error) {
-        NSArray *tempArr = [NSArray arrayWithArray:[operDict objectForKey:url][@"blocks"]];
-        @synchronized (operDict) {
-            [operDict removeObjectForKey:url];
+    NSThread *thread = [NSThread currentThread];
+    [[session dataTaskWithRequest:request completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
+        if (data && !error) {
+            Log(@"[下载任务]下载完成:%@",url);
+            NSArray *tempArr = [NSArray arrayWithArray:[operDict objectForKey:url][@"blocks"]];
+            @synchronized (operDict) {
+                [operDict removeObjectForKey:url];
+            }
+            for (void (^block)(NSData *data,NSError *error) in tempArr) {
+                block(data,nil);
+            }
+        }else
+        {
+            Log(@"[下载任务]失败重试:%@",url);
+            [self download:url params:data count:++mcount];
         }
-        for (void (^block)(NSData *data,NSError *error) in tempArr) {
-            block(receivedata,nil);
-        }
-        
-    }else
-    {
-        [self download:url params:data count:++count];
-    }
+    }] resume];
 }
 
 -(void)addTasks:(NSArray <NSString *> *)urlStrs moduleComplete:(void (^)(BOOL allcomplete,NSString *url,NSData *data,NSError *error))oneblock;
@@ -140,4 +147,38 @@
     }
     return YES;
 }
+
+-(void)configSession
+{
+    NSURLSessionConfiguration *conf = [NSURLSessionConfiguration defaultSessionConfiguration];
+    session = [NSURLSession sessionWithConfiguration:conf delegate:self delegateQueue:sessionqueue];
+}
+
+- (void)URLSession:(NSURLSession *)session didReceiveChallenge:(NSURLAuthenticationChallenge *)challenge completionHandler:(void (^)(NSURLSessionAuthChallengeDisposition, NSURLCredential *))completionHandler
+{
+    NSURLProtectionSpace *protectionSpace = challenge.protectionSpace;
+    if ([protectionSpace.authenticationMethod isEqualToString:NSURLAuthenticationMethodServerTrust]) {
+        SecTrustRef serverTrust = protectionSpace.serverTrust;
+        completionHandler(NSURLSessionAuthChallengeUseCredential, [NSURLCredential credentialForTrust:serverTrust]);
+    } else {
+        completionHandler(NSURLSessionAuthChallengePerformDefaultHandling, nil);
+    }
+}
+
+-(void)inthread:(NSData *)data error:(NSError *)error count:(NSInteger)mcount url:(NSString *)url
+{
+    if (data && !error) {
+        NSArray *tempArr = [NSArray arrayWithArray:[operDict objectForKey:url][@"blocks"]];
+        @synchronized (operDict) {
+            [operDict removeObjectForKey:url];
+        }
+        for (void (^block)(NSData *data,NSError *error) in tempArr) {
+            block(data,nil);
+        }
+    }else
+    {
+        [self download:url params:data count:++mcount];
+    }
+}
+
 @end

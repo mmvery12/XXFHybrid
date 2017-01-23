@@ -133,7 +133,6 @@
 				6954F6851D8FDEFB00EE3C94 /* Main.storyboard */,
 				6954F6881D8FDEFB00EE3C94 /* Assets.xcassets */,
 				6954F68A1D8FDEFB00EE3C94 /* LaunchScreen.storyboard */,
-				6954F68D1D8FDEFB00EE3C94 /* Info.plist */,
 				6954F67C1D8FDEFB00EE3C94 /* Supporting Files */,
 			);
 			name = HyDemo;
@@ -143,6 +142,7 @@
 		6954F67C1D8FDEFB00EE3C94 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				6954F68D1D8FDEFB00EE3C94 /* Info.plist */,
 				6954F67D1D8FDEFB00EE3C94 /* main.m */,
 			);
 			name = "Supporting Files";

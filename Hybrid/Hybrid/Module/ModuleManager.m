@@ -231,7 +231,6 @@ static NSString *const TFolderPath = @"TFolderPath";
         Log(@"%@将module写入缓存文件夹开始",str);
         if (success) {
             Log(@"%@将module写入缓存文件夹结束",str);
-            Log(@"%@当前module类型为普通文件，开始写入保存文件夹",str);
             module.status = ModuleStatusNeedArchize;
             if ([needArchiveType containsObject:module.type]) {//zip解压
                 Log(@"%@当前module类型为zip/rar文件，开始解压",str);
