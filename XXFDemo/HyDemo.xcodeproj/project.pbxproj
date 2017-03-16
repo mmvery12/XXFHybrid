@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		6914BD491E7AB51F0012EE6E /* ZipArchive.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6914BD481E7AB51F0012EE6E /* ZipArchive.framework */; };
+		6914BD4B1E7AB53B0012EE6E /* Hybrid.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6914BD4A1E7AB53B0012EE6E /* Hybrid.framework */; };
 		6954F67E1D8FDEFB00EE3C94 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 6954F67D1D8FDEFB00EE3C94 /* main.m */; };
 		6954F6811D8FDEFB00EE3C94 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 6954F6801D8FDEFB00EE3C94 /* AppDelegate.m */; };
 		6954F6841D8FDEFB00EE3C94 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6954F6831D8FDEFB00EE3C94 /* ViewController.m */; };
@@ -15,8 +17,6 @@
 		6954F68C1D8FDEFB00EE3C94 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6954F68A1D8FDEFB00EE3C94 /* LaunchScreen.storyboard */; };
 		6954F6971D8FDEFB00EE3C94 /* HyDemoTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 6954F6961D8FDEFB00EE3C94 /* HyDemoTests.m */; };
 		6954F6A21D8FDEFB00EE3C94 /* HyDemoUITests.m in Sources */ = {isa = PBXBuildFile; fileRef = 6954F6A11D8FDEFB00EE3C94 /* HyDemoUITests.m */; };
-		69783F571D93EB8A00EFCD3B /* Hybrid.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 69783F561D93EB8A00EFCD3B /* Hybrid.framework */; };
-		69783F581D93EB8A00EFCD3B /* Hybrid.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 69783F561D93EB8A00EFCD3B /* Hybrid.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		69917A0E1D9281C500DD0A05 /* Config.json in Resources */ = {isa = PBXBuildFile; fileRef = 69917A0D1D9281C500DD0A05 /* Config.json */; };
 		69AA55AC1D9911EC00B917EC /* URL.json in Resources */ = {isa = PBXBuildFile; fileRef = 69AA55AB1D9911EC00B917EC /* URL.json */; };
 /* End PBXBuildFile section */
@@ -38,21 +38,9 @@
 		};
 /* End PBXContainerItemProxy section */
 
-/* Begin PBXCopyFilesBuildPhase section */
-		69783F591D93EB8A00EFCD3B /* Embed Frameworks */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "";
-			dstSubfolderSpec = 10;
-			files = (
-				69783F581D93EB8A00EFCD3B /* Hybrid.framework in Embed Frameworks */,
-			);
-			name = "Embed Frameworks";
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-/* End PBXCopyFilesBuildPhase section */
-
 /* Begin PBXFileReference section */
+		6914BD481E7AB51F0012EE6E /* ZipArchive.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ZipArchive.framework; path = "../../../Library/Developer/Xcode/DerivedData/21345/XXF-fmgtbobbhpxxmffnlsxkzfkrlhgk/Build/Products/Debug-iphonesimulator/ZipArchive.framework"; sourceTree = "<group>"; };
+		6914BD4A1E7AB53B0012EE6E /* Hybrid.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Hybrid.framework; path = "../../../Library/Developer/Xcode/DerivedData/21345/XXF-fmgtbobbhpxxmffnlsxkzfkrlhgk/Build/Products/Debug-iphonesimulator/Hybrid.framework"; sourceTree = "<group>"; };
 		6954F6791D8FDEFB00EE3C94 /* HyDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HyDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		6954F67D1D8FDEFB00EE3C94 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		6954F67F1D8FDEFB00EE3C94 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -79,7 +67,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				69783F571D93EB8A00EFCD3B /* Hybrid.framework in Frameworks */,
+				6914BD4B1E7AB53B0012EE6E /* Hybrid.framework in Frameworks */,
+				6914BD491E7AB51F0012EE6E /* ZipArchive.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -100,6 +89,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		6914BD471E7AB51F0012EE6E /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				6914BD4A1E7AB53B0012EE6E /* Hybrid.framework */,
+				6914BD481E7AB51F0012EE6E /* ZipArchive.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		6954F6701D8FDEFB00EE3C94 = {
 			isa = PBXGroup;
 			children = (
@@ -110,6 +108,7 @@
 				6954F67A1D8FDEFB00EE3C94 /* Products */,
 				69AA55AB1D9911EC00B917EC /* URL.json */,
 				69917A0D1D9281C500DD0A05 /* Config.json */,
+				6914BD471E7AB51F0012EE6E /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -178,7 +177,6 @@
 				6954F6751D8FDEFB00EE3C94 /* Sources */,
 				6954F6761D8FDEFB00EE3C94 /* Frameworks */,
 				6954F6771D8FDEFB00EE3C94 /* Resources */,
-				69783F591D93EB8A00EFCD3B /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
